@@ -24,6 +24,11 @@
 <div class="clock" id="clock"></div>
 <!--button onclick="alert('sup broski')">re</button-->
 <script>
+    if(window.parent.colorScheme === 'dark') {
+        document.getElementById('clock').style.color = 'white';
+    } else {
+        document.getElementById('clock').style.color = '#000';
+    }
 function updateClock() {
     const now = new Date();
 

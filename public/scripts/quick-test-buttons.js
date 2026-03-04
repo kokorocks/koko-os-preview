@@ -14,6 +14,6 @@ fullscreenBtn.onclick = () => {
 };
 
 document.getElementById('resetBtn').onclick = () => {
-    localStorage.removeItem('glass_os_state_v2');
+    localStorage.removeItem('state');
     location.reload();
 };

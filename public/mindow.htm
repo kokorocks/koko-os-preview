@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Iframe Widget</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #2e1a47, #192a56, #5f2c44);
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* The invisible wrapper that holds everything including external handles */
+        .widget-wrapper {
+            position: absolute;
+            top: 10vh;
+            left: 50vw;
+            transform: translateX(-50%);
+            width: 380px;
+            height: 520px;
+            display: flex;
+            flex-direction: column;
+            isolation: isolate;
+            user-select: none;
+        }
+
+        /* The actual visible window */
+        .widget-box {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            border-radius: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        /* Drag Handle - Transparent over the top of the iframe */
+        .drag-handle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 15px;
+            gap: 6px;
+            cursor: grab;
+            z-index: 10;
+            background: transparent;
+        }
+
+        .drag-handle:active { cursor: grabbing; }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background-color: #333;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .content-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Floating Controls (Show on Double Click) */
+        .controls-overlay {
+            position: absolute;
+            top: -45px;
+            right: calc(50% - 42px);
+            display: none; /* Hidden by default */
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        .control-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .control-btn:hover { transform: scale(1.1); }
+
+        .btn-close { background-color: #ff5f57; color: #fff; }
+        .btn-min { background-color: #ffbd2e; color: #fff; }
+
+        /* External Resize Handles */
+        .resize-handle {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            z-index: 1; /* Sits behind the box but extends outside */
+            cursor: pointer;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+
+        .resize-left {        
+            transform: rotate(-90deg);
+            bottom: -25px;
+            left: -25px;
+            cursor: sw-resize;
+        }
+
+        .resize-right {        
+            transform: rotate(90deg);
+            bottom: -25px;
+            right: -25px;
+            cursor: se-resize;
+        }
+
+        .resize-handle svg {
+            width: 100%;
+            height: 100%;
+            stroke: #fff;
+            stroke-width: 4;
+            opacity: 0.8;
+        }
+
+        /* Utility Class for Dragging State */
+        .interacting .content-iframe { pointer-events: none; }
+        
+        /* Minimized State */
+        .minimized { height: 60px !important; }
+        .minimized .content-iframe { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="widget-wrapper" id="widget">
+        
+        <div class="controls-overlay" id="controls">
+            <button class="control-btn btn-min" id="minBtn">−</button>
+            <button class="control-btn btn-close" id="closeBtn">×</button>
+        </div>
+
+        <div class="widget-box" id="widgetBox">
+            <div class="drag-handle" id="dragHandle">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <iframe class="content-iframe" id="myIframe" srcdoc="
+                <div style='display:flex; flex-direction:column; align-items:center; justify-content:flex-start; height:100%; padding-top:20px; font-family:sans-serif;'>
+                    <h1 style='margin:0; font-weight:400;'>00:16.46</h1>
+                    <p style='color:#888; font-size:12px; margin-top:5px;'>High-quality</p>
+                    <div style='width:80%; height:40px; margin:20px 0; background:repeating-linear-gradient(90deg, #b0d1eb, #b0d1eb 3px, transparent 3px, transparent 6px); opacity:0.6;'></div>
+                    <div style='width:90%; background:#fff; box-shadow:0 4px 15px rgba(0,0,0,0.05); padding:15px; border-radius:15px; text-align:left;'>
+                        <h4 style='margin:0 0 10px 0;'>AI Speech Recognition</h4>
+                        <p style='margin:0; font-size:14px; color:#333;'>hi everyone great to be here today <b>i'm super</b></p>
+                    </div>
+                </div>
+            "></iframe>
+        </div>
+
+        <div class="resize-handle resize-left" id="resizeLeft">
+            <svg viewBox="0 0 40 40">
+                <path d="M 35 15 A 20 20 0 0 0 15 35" fill="none" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <div class="resize-handle resize-right" id="resizeRight">
+            <svg viewBox="0 0 40 40">
+                <path d="M 5 15 A 20 20 0 0 1 25 35" fill="none" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+    </div>
+
+    <script>
+        const widget = document.getElementById('widget');
+        const widgetBox = document.getElementById('widgetBox');
+        const dragHandle = document.getElementById('dragHandle');
+        const controls = document.getElementById('controls');
+        const resizeLeft = document.getElementById('resizeLeft');
+        const resizeRight = document.getElementById('resizeRight');
+        const closeBtn = document.getElementById('closeBtn');
+        const minBtn = document.getElementById('minBtn');
+
+        let isDragging = false, isResizingLeft = false, isResizingRight = false, resizable = true, draggable = true;
+        let startX, startY, startW, startH, startL, startT;
+
+        if(resizable) {
+            resizeLeft.style.display = 'block';
+            resizeRight.style.display = 'block';
+        } else {
+            resizeLeft.style.display = 'none';
+            resizeRight.style.display = 'none';
+        }
+        if(draggable) {
+            dragHandle.style.display = 'flex';
+        } else {
+            dragHandle.style.display = 'none';
+        }
+
+        // Double Click to show controls
+        widgetBox.addEventListener('dblclick', () => {
+            controls.style.display = (controls.style.display === 'flex') ? 'none' : 'flex';
+        });
+
+        // Close functionality
+        closeBtn.addEventListener('click', () => widget.remove());
+
+        // Minimize functionality
+        minBtn.addEventListener('click', () => {
+            widget.classList.toggle('minimized');
+            minBtn.textContent = widget.classList.contains('minimized') ? '+' : '−';
+        });
+
+        function lockPos() {
+            const rect = widget.getBoundingClientRect();
+            widget.style.transform = 'none';
+            widget.style.left = rect.left + 'px';
+            widget.style.top = rect.top + 'px';
+        }
+
+        // --- Dragging ---
+        dragHandle.addEventListener('mousedown', (e) => {
+            lockPos();
+            isDragging = true;
+            widget.classList.add('interacting');
+            startX = e.clientX; startY = e.clientY;
+            startL = widget.offsetLeft; startT = widget.offsetTop;
+        });
+
+        // --- Resizing ---
+        const startResize = (e, type) => {
+            lockPos();
+            if (type === 'left') isResizingLeft = true;
+            else isResizingRight = true;
+            widget.classList.add('interacting');
+            startX = e.clientX; startY = e.clientY;
+            startW = widget.offsetWidth; startH = widget.offsetHeight;
+            startL = widget.offsetLeft;
+            e.stopPropagation();
+        };
+
+        resizeRight.addEventListener('mousedown', (e) => startResize(e, 'right'));
+        resizeLeft.addEventListener('mousedown', (e) => startResize(e, 'left'));
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                widget.style.left = (startL + (e.clientX - startX)) + 'px';
+                widget.style.top = (startT + (e.clientY - startY)) + 'px';
+            }
+            if (isResizingRight) {
+                widget.style.width = Math.max(250, startW + (e.clientX - startX)) + 'px';
+                widget.style.height = Math.max(150, startH + (e.clientY - startY)) + 'px';
+            }
+            if (isResizingLeft) {
+                const dx = e.clientX - startX;
+                if ((startW - dx) >= 250) {
+                    widget.style.left = (startL + dx) + 'px';
+                    widget.style.width = (startW - dx) + 'px';
+                }
+                widget.style.height = Math.max(150, startH + (e.clientY - startY)) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = isResizingLeft = isResizingRight = false;
+            widget.classList.remove('interacting');
+        });
+    </script>
+</body>
+</html>

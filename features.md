@@ -7,3 +7,4 @@ add app widgets,
 add spliscreen by swiping from the bottom right to the left above the bottom opens a slpitview menu
 i want to add app bridges so each app can communicate with rules, like only some content, only to some apps, sometimes requiring permissions, etc
 using the bridge i wanna create a way to make the contacts app have access to a bunch of contacts that can be accessed directly from that app
+app widget: it is a widget but instead of being a normal app or a normal widget, it is like a movable resizable desktop window

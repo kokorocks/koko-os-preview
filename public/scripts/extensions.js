@@ -1,43 +1,36 @@
-/* TODO: make this code work, 
-it will give more features, 
-and will add functions to the quick settings
-and will allow me to add settings DIRECTLY TO THE SETTINGS APP
-        */
-/*
+/* TODO: make this code work,
+   it will give more features,
+   and will add functions to the quick settings
+   and will allow me to add settings DIRECTLY TO THE SETTINGS APP
+*/
+//alert('bruh');
 
 const EXTENSIONS = ['events'];
-const path = EXTENSIONS[0];
-const extPath = `./extensions/${path}/config.json`;
 
-const jsonData = await fetch(extPath).then(r => r.json());
+(async function loadExtensions() {
+    let scripts = '';
 
-console.log(jsonData);
+    for (const name of EXTENSIONS) {
+        const extPath = `./extensions/${name}/config.json`;
 
-for (const name of EXTENSIONS) {
-    
-    const extPath = `./extensions/${name}/config.json`;
+        try {
+            const config = await fetch(extPath).then(r => r.json());
+            // config is now the parsed object
+            console.log('loaded', name, config);
 
-    const config = await fetch(extPath).then(r => r.json());
+            // append the script tag for this extension
+            scripts += `<script src="./extensions/${name}/${config.file}"></script>`;
+        } catch (err) {
+            console.error(`failed to load extension ${name}`, err);
+        }
+    }
 
-    //console.log(config);
-    //console.log(config.file)
-    //console.log(config.willChange)
-
-    const iframe=document.getElementById('background-services')
-    console.log(iframe)
+    const iframe = document.getElementById('background-services');
+    if (!iframe) {
+        console.warn('background-services iframe not found');
+        return;
+    }
 
     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    const app = iframeDoc.createElement('script');
-    app.type = 'text/javascript';
-    app.src = 'scripts/app-functionality.js' // to generate a path lie public/extensions/events/events.js
-    app.async = config.async;     
-    iframeDoc.head.appendChild(app);
-
-    const script = iframeDoc.createElement('script');
-    script.type = 'text/javascript';
-    script.src = './extensions/'+name+'/'+config.file; // to generate a path lie public/extensions/events/events.js
-    script.async = config.async; 
-    
-    iframeDoc.head.appendChild(script);
-
-}*/
+    iframe.srcdoc = '<script src="scripts/app-functionality.js"></script>' + scripts;
+})();

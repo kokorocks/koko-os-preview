@@ -3,6 +3,17 @@ window.alert = function (msg) {
   window.parent.alert(msg);
 };
 
+window.prompt = function (msg, def) {
+  window.parent.prompt(msg, def);
+};
+
+window.confirm = function (msg) {
+  window.parent.confirm(msg);
+};
+
+
+window.createWidget = window.parent.createWidget;
+
 window.openMenu = function (html, height='50%') {
     const menu=parentDocument.querySelector(".bottom-menu")
     //menu.innerHTML=html

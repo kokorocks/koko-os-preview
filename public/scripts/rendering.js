@@ -25,6 +25,7 @@
  * Animations still work perfectly while widgets/apps stay loaded in background pages.
  */
 
+
 const slider = document.getElementById('pagesSlider');
 const dockEl = document.getElementById('dock');
 const drawerList = document.getElementById('drawerList');
@@ -108,7 +109,7 @@ function initRender() {
 
     // ---------- Dock ----------
     dockEl.innerHTML = '';
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < docklen; i++) {
         const item = dock[i];
         const slot = document.createElement('div');
         slot.className = 'app-slot dock-app-slot';
@@ -384,7 +385,7 @@ function render() {
 
     /* ---------- Dock ---------- */
     dockEl.innerHTML = '';
-    for (let i = 0; i < 5; i++) { // REMEMBER: dock size is found here
+    for (let i = 0; i < docklen; i++) { // REMEMBER: dock size is found here
         const item = dock[i];
         const slot = document.createElement('div');
 

@@ -38,7 +38,8 @@ function rubberBand(distance, dimension, resistance = 0.55) {
 
 // ---------- PAN START ----------
 hammer.on('panstart', (e) => {
-    if (isDragging || shadeIsMoving) return;
+    if (isDragging || shadeIsMoving || isDraggingAW) return;
+    console.log(isDraggingAW)
 
     // Use screen container rect for accurate positioning
     const screenRect = screen.getBoundingClientRect();
@@ -134,7 +135,7 @@ hammer.on('swipeup', (e) => {
 })
 // ---------- PAN MOVE ----------
 hammer.on('panmove', (e) => {
-    if (!activeGesture || isDragging) return;
+    if (!activeGesture || isDragging || isDraggingAW) return;    console.log(isDraggingAW)
     
     // Ensure deltaY is a number and handle properly
     currentDeltaY = e.deltaY || 0;
@@ -242,7 +243,7 @@ function handleDragFrame() {
 
 // ---------- PAN END ----------
 hammer.on('panend', (e) => {
-    if (!activeGesture || isDragging) return;
+    if (!activeGesture || isDragging || isDraggingAW) return;    console.log(isDraggingAW)
 
     const velocity = e.velocityY;
     const distance = Math.abs(e.deltaY);
@@ -383,7 +384,7 @@ hammer.on('panend', (e) => {
 // ---------- HORIZONTAL SWIPES (Home Pages) ----------
 hammer.on('swipeleft swiperight', (e) => {
     
-    if (activeGesture || isDragging || isShadeOpen()) return;
+    if (activeGesture || isDragging || isShadeOpen()  || isDraggingAW) return;
 
     const screenRect = screen.getBoundingClientRect();
     const centerY = screenRect.top + screenRect.height / 2;

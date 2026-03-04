@@ -1,198 +1,4 @@
-<!--DOCTYPE html>
-hia
-
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browser</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #000000;
-            font-family: Arial, sans-serif;
-        }
-        
-        .bottomBar {
-            position: fixed;
-            bottom: 0;
-            width: 99%;
-            background-color: #16002acc;
-            display: flex;
-            align-items: center;      /* vertically center */
-            justify-content: space-between; /* spread items */
-            height: 35px;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            padding: 0 6px;          /* add some horizontal padding */
-        }
-
-        #home {
-            display: flex;            /* make it a flex container */
-            align-items: center;      /* vertically center SVG inside button */
-            justify-content: center;  /* horizontally center SVG inside button */
-            width: 35px;              /* make it a square button */
-            height: 35px;
-            color: white;
-        }
-
-        .url {
-            height: 100%;
-            /*border: #ffffff 1px solid;*/
-            border: none;
-            flex-grow: 1;
-            padding: 0 10px;
-            background-color: #16002acc;
-            color: rgb(146, 146, 146);
-        }
-
-        .url:active{
-            border: none;
-        }
-
-        .btn {
-            background-color: #16002acc;
-            height: 100%;
-            color: white;
-            /*border: #ffffff 1px solid;*/
-            border: none;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background-color: #16002acc;
-        }
-
-        #home{
-            text-align: center;
-            justify-content: center;
-        }
-    </style>
-  </head>
-  <body>
-    <div class="bottomBar">
-      <button id="home" class="btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="currentColor">
-              <path d="M304 70.1C313.1 61.9 326.9 61.9 336 70.1L568 278.1C577.9 286.9 578.7 302.1 569.8 312C560.9 321.9 545.8 322.7 535.9 313.8L527.9 306.6L527.9 511.9C527.9 547.2 499.2 575.9 463.9 575.9L175.9 575.9C140.6 575.9 111.9 547.2 111.9 511.9L111.9 306.6L103.9 313.8C94 322.6 78.9 321.8 70 312C61.1 302.2 62 287 71.8 278.1L304 70.1zM320 120.2L160 263.7L160 512C160 520.8 167.2 528 176 528L224 528L224 424C224 384.2 256.2 352 296 352L344 352C383.8 352 416 384.2 416 424L416 528L464 528C472.8 528 480 520.8 480 512L480 263.7L320 120.3zM272 528L368 528L368 424C368 410.7 357.3 400 344 400L296 400C282.7 400 272 410.7 272 424L272 528z"/>
-          </svg>
-      </button>
-      
-      <input type="url" name="" id="url" class="url">
-      <button type="button" id="<" class="btn">
-        ❮
-      </button>
-      <button type="button" id=">" class="btn">
-        ❯
-      </button>
-      <button type="button" id="re" class="btn">
-        ⟳
-      </button>
-      <button id="more" class="btn">
-        ☰
-      </button>
-    </div>
-  </body>
-</html>
-</body>
-</html-->
-
-
-<!--iframe
-  id="proxyFrame"
-  src="https://proxy.qwksearch.com/?url=https://youtube.com"
-  width="100%"
-  height="500px"
-  origin="anonymouse"
-  sandbox="allow-scripts allow-forms allow-same-origin"
-  referrerpolicy="no-referrer"
->
-
-<script>
-(() => {
-  const proxyBase = "https://proxy.qwksearch.com/?url=";
-  const iframe = document.getElementById("proxyFrame");
-
-  const toProxy = url => {
-    try {
-      return proxyBase + encodeURIComponent(new URL(url, location.href).href);
-    } catch {
-      return proxyBase + encodeURIComponent(url);
-    }
-  };
-
-  const load = url => iframe.src = toProxy(url);
-
-  /* =========================
-     HARD BLOCK PAGE NAVIGATION
-     ========================= */
-  window.addEventListener("beforeunload", e => {
-    e.preventDefault();
-    e.returnValue = "";
-  });
-
-  /* =========================
-     INTERCEPT ALL LINKS
-     ========================= */
-  document.addEventListener("click", e => {
-    const a = e.target.closest("a");
-    if (!a || !a.href) return;
-    e.preventDefault();
-    load(a.href);
-  }, true);
-
-  /* =========================
-     FORCE window.open → iframe
-     ========================= */
-  window.open = url => {
-    load(url);
-    return null;
-  };
-
-  /* =========================
-     HISTORY API HIJACK
-     ========================= */
-  const hijackHistory = fn => {
-    const orig = history[fn];
-    history[fn] = function (state, title, url) {
-      if (url) load(url);
-      return orig.apply(this, arguments);
-    };
-  };
-
-  hijackHistory("pushState");
-  hijackHistory("replaceState");
-
-  /* =========================
-     META REFRESH BLOCKER
-     ========================= */
-  new MutationObserver(() => {
-    document.querySelectorAll('meta[http-equiv="refresh"]').forEach(meta => {
-      const match = meta.content.match(/url=(.+)/i);
-      if (match) load(match[1]);
-      meta.remove();
-    });
-  }).observe(document.documentElement, {
-    childList: true,
-    subtree: true
-  });
-
-  /* =========================
-     FORM INTERCEPT
-     ========================= */
-  document.addEventListener("submit", e => {
-    e.preventDefault();
-    const f = e.target;
-    const url = f.action || location.href;
-    const params = new URLSearchParams(new FormData(f)).toString();
-    load(url + (params ? "?" + params : ""));
-  }, true);
-
-})();
-</script-->
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mobile Browser Experience</title>
@@ -504,7 +310,7 @@ hia
                 </div>
                 <div class="adblock-stat">
                     <div class="power-btn" id="blockerToggle" onclick="toggleBlocker()">
-                        <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"></path></svg>
                     </div>
                     <div class="stat-text">
                         <h3 id="blockedCount">27</h3>
@@ -519,14 +325,14 @@ hia
             <div class="address-bar-container">
                 <div class="address-bar">
                     <button class="icon-btn" title="Back" id="backBtn">
-                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>
                     </button>
                     <input type="url" id="urlInput" class="address-input" value="google.com" onkeydown="handleUrl(event)">
                     <button class="icon-btn" title="Forward" id="forwardBtn">
-                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"></path></svg>
                     </button>
                     <button class="icon-btn shield-active" id="shieldBtn" title="Ad Blocker" onclick="toggleAdModal()">
-                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"></path></svg>
                     </button>
                 </div>
             </div>
@@ -534,27 +340,34 @@ hia
 
         <div class="tab-switcher" id="tabSwitcher">
             <div class="tab-search">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#999"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#999"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
                 <span style="color:#999">Search tabs</span>
             </div>
-            <div class="tab-grid" id="tabGrid"></div>
+            <div class="tab-grid" id="tabGrid"><div class="tab-card active-tab">
+                <div class="tab-card-header">
+                    <span style="width:10px; height:10px; background:#4285f4; border-radius:50%; display:inline-block;"></span>
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">Google</span>
+                    <div onclick="closeTab(event, 101)">✕</div>
+                </div>
+                <div class="tab-card-preview"></div>
+            </div></div>
         </div>
 
         <div class="bottom-nav">
             <div class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path></svg>
             </div>
             <div class="nav-item" id="refreshBtn">
-                <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg> 
+                <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path></svg> 
             </div>
             <div class="nav-item" onclick="addNewTab()">
-                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
             </div>
             <div class="nav-item" onclick="toggleTabs()">
                 <div class="tab-counter" id="tabCountBtn">1</div>
             </div>
             <div class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
             </div>
         </div>
 
@@ -723,5 +536,5 @@ hia
     init();
 </script>
 
-</body>
-</html>
+
+</body></html>

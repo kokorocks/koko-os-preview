@@ -233,7 +233,7 @@ function openApp(id, data, splitView = false, change = 0, transition = true) {
     const sanitizedName = appDB[id].name.replace(/\s+/g, '-');
 
     // Initialize tracker array for this app
-    if (!window.appTracker[id]) window.appTracker[id] = [];
+    //if (!window.appTracker[id]) window.appTracker[id] = [];
 
     requestPermission(id, function done(grantedPermissions) {
         const permissionsVar = grantedPermissions.length

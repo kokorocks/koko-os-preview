@@ -1,4 +1,4 @@
-import cv2
+'''import cv2
 import numpy as np
 import mediapipe as mp
 from datetime import datetime
@@ -56,3 +56,16 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+'''
+'''import os
+
+os.environ["WEBKIT_DISABLE_COMPOSITING_MODE"] = "1"
+os.environ["WEBKIT_FORCE_SANDBOX"] = "0"
+os.environ["WEBKIT_USE_SINGLE_PROCESS"] = "1"
+os.environ["WEBKIT_DEBUG"] = "0"'''
+
+import webview
+
+if __name__ == '__main__':
+    webview.create_window('User Agent Test', r'public\home.htm')
+    webview.start(user_agent='Custom user agent')
