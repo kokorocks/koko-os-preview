@@ -446,43 +446,51 @@ function setItem(ref, val) {
 
 
 function handleDrop(src, tgt, forceMove = false) {
-    if(src.loc === tgt.loc && src.p === tgt.p && src.i === tgt.i) return;
+    if (src.loc === tgt.loc && src.p === tgt.p && src.i === tgt.i) return;
 
     const srcItem = getItem(src);
     const tgtItem = getItem(tgt);
 
-    // 1. Drawer Logic
-    if (src.loc === 'drawer') {
-        if (tgt.loc !== 'page' && tgt.loc !== 'dock') return;
-        if (getItem(tgt)) return; 
-        setItem(tgt, src.key);
-    } 
-    // 2. Target is Empty
-    else if (!tgtItem) {
+    // 1. Drawer logic is now unified with the generic
+    //    “empty target” case – we only special‑case the
+    //    drawer when the target is occupied below.
+    if (src.loc === 'drawer' && !tgtItem) {
+        // allow placing drawer app on an empty dock slot/page
+        if (tgt.loc === 'page' || tgt.loc === 'dock') {
+            setItem(tgt, src.key);
+            saveState();
+        }
+        return;
+    }
+
+    // 2. Target is empty (includes dock and drawer sources)
+    if (!tgtItem) {
         setItem(tgt, srcItem);
         setItem(src, null);
-    } 
-    // 3. Target is Occupied
+    }
+    // 3. Target is occupied
     else {
-        // Determine if we should make/add to a folder
         const isBothApps = (typeof tgtItem === 'string' && typeof srcItem === 'string');
         const isTargetFolder = (tgtItem && tgtItem.type === 'folder');
 
-        if (!forceMove && isBothApps && tgt.loc !== 'dock') {
-            // App on App Center -> Create Folder
-            const folder = { type: 'folder', apps: [tgtItem, srcItem] };
-            setItem(tgt, folder);
-            setItem(src, null);
-        } 
+        // create/augment a folder even in the dock/drawer
+        if (!forceMove && isBothApps) {
+            // if target is already a folder we just push, otherwise make a new
+            if (isTargetFolder) {
+                tgtItem.apps.push(srcItem);
+                setItem(src, null);
+            } else {
+                const folder = { type: 'folder', apps: [tgtItem, srcItem] };
+                setItem(tgt, folder);
+                setItem(src, null);
+            }
+        }
         else if (!forceMove && isTargetFolder && typeof srcItem === 'string') {
-            // App on Folder Center -> Add to Folder
             tgtItem.apps.push(srcItem);
             setItem(src, null);
         }
         else {
-            // Edge drop or Dock -> Swap positions
-            if (srcItem.type === 'folder' && tgt.loc === 'dock') return; // Restriction
-            
+            // swap; dock folders are valid now so don’t block
             setItem(tgt, srcItem);
             setItem(src, tgtItem);
         }
@@ -490,58 +498,29 @@ function handleDrop(src, tgt, forceMove = false) {
 
     saveState();
     cleanupEmptyPages();
-    render();
-    
+
     if (src.loc === 'folder' && folderModal.classList.contains('open')) {
          openFolder(pages[currentOpenFolder.p][currentOpenFolder.i], true);
     }
+
+    render();
 }
 
+// …existing code...
 
+// somewhere in your global event hookups, e.g. in app-functionality.js
+document.getElementById('dock').addEventListener('click', e => {
+    const slot = e.target.closest('.app-slot, .app-icon');
+    if (!slot) return;
 
+    const loc = slot.dataset.loc;
+    const idx = parseInt(slot.dataset.i, 10);
 
-let presstimer;
-const element = document.querySelector('.appsbar')
-const holdDuration = 500; // Time in milliseconds for a "hold"
-
-// Function to call when the hold is detected
-function onHold() {
-    console.log('Touch and hold detected!');
-    if ('virtualKeyboard' in navigator) {
-      navigator.virtualKeyboard.show();
+    if (loc === 'dock') {
+        const item = dock[idx];
+        if (item && item.type === 'folder') {
+            openFolder(item);
+            e.stopPropagation();
+        }
     }
-
-}
-
-// Function to call on a normal tap/end
-function onRelease() {
-    console.log('Touch released (normal tap or after hold)');
-    // Perform cleanup or other actions here
-}
-
-// Start the timer on touchstart
-element.addEventListener('touchstart', function(e) {
-    // Prevent default browser behavior like context menus if needed
-    // e.preventDefault(); 
-    pressTimer = setTimeout(onHold, holdDuration);
-}, false);
-
-// Clear the timer on touchend or touchcancel
-element.addEventListener('touchend', function(e) {
-    clearTimeout(pressTimer);y
-    onRelease();
-}, false);
-
-element.addEventListener('touchcancel', function(e) {
-    clearTimeout(pressTimer);
-    onRelease();
-}, false);
-
-// Optional: For desktop compatibility, you can also use mousedown/mouseup
-element.addEventListener('mousedown', function(e) {
-    pressTimer = setTimeout(onHold, holdDuration);
-}, false);
-
-element.addEventListener('mouseup', function(e) {
-    clearTimeout(pressTimer);
-}, false);
+});

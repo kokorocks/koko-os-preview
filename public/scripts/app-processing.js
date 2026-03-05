@@ -1,4 +1,3 @@
-
 function closeAppPreviews() {
     const previewArea = document.getElementById('multiappspreviewarea');
     previewArea.style.opacity = '0';
@@ -62,6 +61,18 @@ function createIcon(itemData, isDock = false) {
                 openFolder(itemData);
             }
         };
+
+        // in the dock we also need a listener on the wrapper,
+        // because the dock renders icons slightly differently
+        if (isDock) {
+            icon.parentElement?.addEventListener('click', (e) => {
+                if (!isDragging) {
+                    cancelDrag();
+                    e.stopPropagation();
+                    openFolder(itemData);
+                }
+            });
+        }
 
         return wrapper;
     }

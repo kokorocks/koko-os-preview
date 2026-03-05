@@ -159,3 +159,12 @@ render();
     event.dataTransfer.setDragImage(img, 0, 0);
 }, false);
 */
+
+window.onerror = function (message, url, lineNo, columnNo, error) {
+    alert("Error: " + message + "\nURL: " + url + "\nLine: " + lineNo);
+    // Returning true prevents the default browser error handling (e.g., logging to the console)
+    return true; 
+};
+
+// Example of an uncaught error
+//nonExistentFunction(); // This will trigger the window.onerror handler
