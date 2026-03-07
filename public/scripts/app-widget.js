@@ -100,7 +100,7 @@ window.createWidget = function (
     const resizeR = widget.querySelector('.resize-right');
 
     if (!draggable) drag.style.display = 'none';
-    if (!resizable) resizeL.style.opacity = resizeR.style.opacity = 0;
+    if (!resizable) resizeL.style.display = resizeR.style.display = 'none';
 
     let mode = null;
     let startX, startY, startW, startH, startL;
@@ -155,6 +155,7 @@ window.createWidget = function (
     const resizeRightStart = e => {
         if (!resizable) return;
         if (e.cancelable) e.preventDefault();
+        resizeR.style.opacity = 1
 
         lockToContainer(widget);
 
@@ -176,6 +177,7 @@ window.createWidget = function (
     const resizeLeftStart = e => {
         if (!resizable) return;
         if (e.cancelable) e.preventDefault();
+        resizeL.style.opacity = 1
 
         lockToContainer(widget);
 
@@ -249,6 +251,7 @@ window.createWidget = function (
             const clampedDx = Math.max(dx, maxLeftShift);
 
             let newW = startW - clampedDx;
+            resizeL.style.opacity = 1
 
             if (newW < MIN_W) {
                 newW = MIN_W;
@@ -261,7 +264,6 @@ window.createWidget = function (
             let newH = startH + (clientY - startY);
             const availH = cRect.height - widget.offsetTop;
             widget.style.height = Math.min(Math.max(MIN_H, newH), MAX_H, availH) + 'px';
-            resizeL.style.opacity = 1
         }
     };
 
