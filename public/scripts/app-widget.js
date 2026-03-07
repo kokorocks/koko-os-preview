@@ -100,7 +100,7 @@ window.createWidget = function (
     const resizeR = widget.querySelector('.resize-right');
 
     if (!draggable) drag.style.display = 'none';
-    if (!resizable) resizeL.style.display = resizeR.style.display = 'none';
+    //if (!resizable) resizeL.style.display = resizeR.style.display = 'none';
 
     let mode = null;
     let startX, startY, startW, startH, startL;
