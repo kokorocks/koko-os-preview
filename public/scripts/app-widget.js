@@ -6,6 +6,11 @@ let isDraggingAW = false;
 function lockToContainer(widget) {
     const wRect = widget.getBoundingClientRect();
     const cRect = container.getBoundingClientRect();
+    
+    // Explicitly lock width/height in pixels so it cannot shrink during movement
+    widget.style.width = wRect.width + 'px';
+    widget.style.height = wRect.height + 'px';
+    
     widget.style.transform = 'none';
     widget.style.left = (wRect.left - cRect.left) + 'px';
     widget.style.top = (wRect.top - cRect.top) + 'px';
@@ -39,37 +44,67 @@ window.createWidget = function (
 ) {
     const widget = document.createElement('div');
     widget.className = 'widget-wrapper';
+    
+    // Convert inputs to usable numbers for manual centering
+    const initialWidth = parseFloat(width) || 180;
+    const offsetX = parseFloat(x) || 0;
 
-    // Initial positioning
-    widget.style.left = `calc(50% + ${x})`;
-    widget.style.top = y;
-    widget.style.transform = 'translateX(-50%)';
-    widget.style.position = 'absolute';
-    widget.style.zIndex = ++highestZIndex;
+    widget.style.cssText = `
+        position: absolute;
+        left: calc(50% - ${initialWidth / 2}px + ${offsetX}px);
+        top: ${y};
+        z-index: ${++highestZIndex};
+        width: ${width};
+        height: ${height};
+        min-width: ${minWidth};
+        min-height: ${minHeight};
+        max-width: ${maxWidth};
+        max-height: ${maxHeight};
+        transform: none; /* No transform needed anymore */
+    `;
 
     const MIN_W = parseFloat(minWidth) || 50;
     const MIN_H = parseFloat(minHeight) || 50;
     const MAX_W = maxWidth !== 'none' ? parseFloat(maxWidth) : Infinity;
     const MAX_H = maxHeight !== 'none' ? parseFloat(maxHeight) : Infinity;
 
-    Object.assign(widget.style, { width, height, minWidth, minHeight, maxWidth, maxHeight });
-
     widget.innerHTML = `
-        <div class="controls-overlay" style="display: none; pointer-events: auto;">
-            <button class="control-btn btn-min">−</button>
-            <button class="control-btn btn-close">×</button>
+        <div class="controls-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: auto; background: rgba(0,0,0,0.05); border-radius: inherit; display: none; align-items: center; justify-content: center; gap: 10px;">
+
+            <button class="control-btn btn-min" style="cursor: pointer; z-index: 11;">−</button>
+
+            <button class="control-btn btn-close" style="cursor: pointer; z-index: 11;">×</button>
+
         </div>
-        <div class="widget-box" style="height: 100%; width: 100%; position: relative;">
-            <div class="drag-handle" style="cursor: grab;">
-                <div class="wdot"></div><div class="wdot"></div><div class="wdot"></div>
+
+        <div class="interaction-shield"></div>
+
+        <div class="widget-box">
+
+            <div class="drag-handle">
+
+                <div class="wdot"></div>
+
+                <div class="wdot"></div>
+
+                <div class="wdot"></div>
+
             </div>
-            <iframe class="content-iframe" srcdoc="${html}" style="width: 100%; height: 100%; border: none;"></iframe>
+
+            <iframe class="content-iframe" srcdoc="${html}" style="width: 100%; height: 100%; border: none; pointer-events: auto;"></iframe>
+
         </div>
+
         <div class="resize-handle resize-left">
+
             <svg viewBox="0 0 40 40"><path d="M35 15 A22 22 0 0 0 15 35" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+
         </div>
+
         <div class="resize-handle resize-right">
+
             <svg viewBox="0 0 40 40"><path d="M5 15 A22 22 0 0 1 25 35" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+
         </div>
     `;
 
@@ -78,117 +113,101 @@ window.createWidget = function (
     container.appendChild(widget);
 
     const controls = widget.querySelector('.controls-overlay');
+    const shield = widget.querySelector('.interaction-shield');
     const drag = widget.querySelector('.drag-handle');
-    const resizeL = widget.querySelector('.resize-left');
-    const resizeR = widget.querySelector('.resize-right');
+    const resL = widget.querySelector('.resize-left');
+    const resR = widget.querySelector('.resize-right');
 
     if (!draggable) drag.style.display = 'none';
-    if (!resizable) resizeL.style.display = resizeR.style.display = 'none';
+    if (!resizable) resL.style.display = resR.style.display = 'none';
 
     let mode = null;
-    let startX, startY, startW, startH, startL, grabOffsetX, grabOffsetY;
+    let startX, startY, startW, startH, startL, grabX, grabY;
     let initialX, initialY;
     let holdTimer;
-    let movedBeyondThreshold = false;
-    const MOVE_THRESHOLD = 8; // Pixels of movement allowed during a "hold"
+    let hasMovedSignificant = false;
+    const THRESHOLD = 8; 
 
-    // --- UTILITY: CLOSE MENU ---
-    const closeMenu = () => { controls.style.display = 'none'; };
-
-    // --- GLOBAL DISMISS ---
+    const hideMenu = () => { controls.style.display = 'none'; };
     document.addEventListener('mousedown', (e) => {
-        if (!widget.contains(e.target)) closeMenu();
+        if (!widget.contains(e.target)) hideMenu();
     });
 
-    const bringToFront = () => widget.style.zIndex = ++highestZIndex;
-
-    // --- INTERACTION LOGIC ---
-    const startAction = (e, actionMode) => {
-        bringToFront();
-        movedBeyondThreshold = false;
+    const onStart = (e, m) => {
+        widget.style.zIndex = ++highestZIndex;
         initialX = getClientX(e);
         initialY = getClientY(e);
-        
-        // Start hold timer if clicking the widget body
-        if (actionMode === 'maybe-hold') {
+        hasMovedSignificant = false;
+
+        if (m === 'drag' || m === 'hold-check') {
             holdTimer = setTimeout(() => {
-                if (!movedBeyondThreshold) {
+                if (!hasMovedSignificant) {
                     controls.style.display = 'flex';
                     if (navigator.vibrate) navigator.vibrate(50);
                 }
-            }, 450); // Speed: 450ms hold
+            }, 500);
         }
 
-        if (actionMode === 'drag' || actionMode.startsWith('resize')) {
+        if (m === 'drag' || m.startsWith('resize')) {
             if (e.cancelable) e.preventDefault();
-            e.stopPropagation();
             lockToContainer(widget);
-            
-            mode = actionMode;
+            mode = m;
             isDraggingAW = true;
-            iframe.style.pointerEvents = 'none';
-            widget.classList.add('interacting');
-
-            const wRect = widget.getBoundingClientRect();
-            const cRect = container.getBoundingClientRect();
+            shield.style.display = 'block'; 
             
-            startX = getClientX(e);
-            startY = getClientY(e);
-            startW = widget.offsetWidth;
-            startH = widget.offsetHeight;
-            startL = wRect.left - cRect.left;
-            grabOffsetX = startX - wRect.left;
-            grabOffsetY = startY - wRect.top;
+            const r = widget.getBoundingClientRect();
+            const cr = container.getBoundingClientRect();
+            startX = initialX;
+            startY = initialY;
+            startW = r.width;
+            startH = r.height;
+            startL = r.left - cr.left;
+            grabX = startX - r.left;
+            grabY = startY - r.top;
         }
     };
 
-    // Event Listeners
-    widget.querySelector('.widget-box').addEventListener('mousedown', (e) => startAction(e, 'maybe-hold'));
-    widget.querySelector('.widget-box').addEventListener('touchstart', (e) => startAction(e, 'maybe-hold'), { passive: true });
+    drag.addEventListener('mousedown', e => onStart(e, 'drag'));
+    drag.addEventListener('touchstart', e => onStart(e, 'drag'), {passive: false});
     
-    drag.addEventListener('mousedown', (e) => startAction(e, 'drag'));
-    drag.addEventListener('touchstart', (e) => startAction(e, 'drag'), { passive: false });
+    // Listen for hold on the shield (which is over the iframe)
+    widget.addEventListener('mousedown', e => { 
+        if(e.target === shield || e.target.closest('.widget-box')) onStart(e, 'hold-check')
+    });
+    
+    resR.addEventListener('mousedown', e => onStart(e, 'resize-right'));
+    resR.addEventListener('touchstart', e => onStart(e, 'resize-right'), {passive: false});
+    resL.addEventListener('mousedown', e => onStart(e, 'resize-left'));
+    resL.addEventListener('touchstart', e => onStart(e, 'resize-left'), {passive: false});
 
-    resizeR.addEventListener('mousedown', (e) => startAction(e, 'resize-right'));
-    resizeR.addEventListener('touchstart', (e) => startAction(e, 'resize-right'), { passive: false });
+    const onMove = (e) => {
+        const cx = getClientX(e);
+        const cy = getClientY(e);
 
-    resizeL.addEventListener('mousedown', (e) => startAction(e, 'resize-left'));
-    resizeL.addEventListener('touchstart', (e) => startAction(e, 'resize-left'), { passive: false });
-
-    const onMove = e => {
-        const curX = getClientX(e);
-        const curY = getClientY(e);
-
-        // Jitter/Threshold check
-        if (Math.hypot(curX - initialX, curY - initialY) > MOVE_THRESHOLD) {
-            movedBeyondThreshold = true;
-            clearTimeout(holdTimer);
+        if (!hasMovedSignificant) {
+            if (Math.hypot(cx - initialX, cy - initialY) > THRESHOLD) {
+                hasMovedSignificant = true;
+                clearTimeout(holdTimer);
+            }
         }
 
         if (!mode) return;
         if (e.cancelable) e.preventDefault();
-
-        const cRect = container.getBoundingClientRect();
+        const cr = container.getBoundingClientRect();
 
         if (mode === 'drag') {
-            const nl = curX - cRect.left - grabOffsetX;
-            const nt = curY - cRect.top - grabOffsetY;
-            widget.style.left = Math.min(Math.max(0, nl), cRect.width - widget.offsetWidth) + 'px';
-            widget.style.top = Math.min(Math.max(0, nt), cRect.height - widget.offsetHeight) + 'px';
-        }
-
-        if (mode === 'resize-right') {
-            const nw = Math.min(Math.max(MIN_W, startW + (curX - startX)), MAX_W, cRect.width - widget.offsetLeft);
-            const nh = Math.min(Math.max(MIN_H, startH + (curY - startY)), MAX_H, cRect.height - widget.offsetTop);
-            widget.style.width = nw + 'px';
-            widget.style.height = nh + 'px';
-        }
-
-        if (mode === 'resize-left') {
-            let nw = Math.min(Math.max(MIN_W, startW - (curX - startX)), MAX_W, startW + startL);
+            const l = cx - cr.left - grabX;
+            const t = cy - cr.top - grabY;
+            widget.style.left = Math.min(Math.max(0, l), cr.width - widget.offsetWidth) + 'px';
+            widget.style.top = Math.min(Math.max(0, t), cr.height - widget.offsetHeight) + 'px';
+        } else if (mode === 'resize-right') {
+            widget.style.width = Math.min(Math.max(MIN_W, startW + (cx - startX)), MAX_W, cr.width - widget.offsetLeft) + 'px';
+            widget.style.height = Math.min(Math.max(MIN_H, startH + (cy - startY)), MAX_H, cr.height - widget.offsetTop) + 'px';
+        } else if (mode === 'resize-left') {
+            let nw = Math.min(Math.max(MIN_W, startW - (cx - startX)), MAX_W, startW + startL);
             widget.style.left = (startL + (startW - nw)) + 'px';
             widget.style.width = nw + 'px';
-            widget.style.height = Math.min(Math.max(MIN_H, startH + (curY - startY)), MAX_H, cRect.height - widget.offsetTop) + 'px';
+            widget.style.height = Math.min(Math.max(MIN_H, startH + (cy - startY)), MAX_H, cr.height - widget.offsetTop) + 'px';
         }
     };
 
@@ -196,19 +215,16 @@ window.createWidget = function (
         clearTimeout(holdTimer);
         mode = null;
         isDraggingAW = false;
-        widget.classList.remove('interacting');
-        iframe.style.pointerEvents = 'auto';
+        shield.style.display = 'none';
     };
 
     document.addEventListener('mousemove', onMove);
-    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchmove', onMove, {passive: false});
     document.addEventListener('mouseup', onEnd);
     document.addEventListener('touchend', onEnd);
 
-    // Button actions
-    widget.querySelector('.btn-close').onclick = (e) => { e.stopPropagation(); widget.remove(); };
-    widget.querySelector('.btn-min').onclick = (e) => {
-        e.stopPropagation();
+    widget.querySelector('.btn-close').onclick = () => widget.remove();
+    widget.querySelector('.btn-min').onclick = () => {
         widget.classList.toggle('minimized');
         widget.querySelector('.btn-min').textContent = widget.classList.contains('minimized') ? '+' : '−';
     };
