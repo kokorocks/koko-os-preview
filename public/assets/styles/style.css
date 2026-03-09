@@ -1678,12 +1678,14 @@ input:checked + .qs-btn-round { background: white; color: black; }
 }
 
 .controls-overlay {
+    width: 65px;
+    height: 30px;
     position: absolute;
-    top: -45px;
-    right: calc(50% - 42px);
+    top: -5px;
+    right: calc(50% - 120px);
     display: none; 
-    gap: 10px;
-    padding: 8px 15px;
+    gap: 5px;
+    padding: 5px 8px;
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
     border-radius: 20px;
