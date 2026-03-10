@@ -9,8 +9,8 @@ function lockToContainer(widget) {
     
     // Explicitly lock width/height in pixels so it cannot shrink during movement
     widget.style.width = wRect.width + 'px';
-    widget.style.height = wRect.height + 'px';
-    
+    widget.style.height = wRect.height + 'px';    
+
     widget.style.transform = 'none';
     widget.style.left = (wRect.left - cRect.left) + 'px';
     widget.style.top = (wRect.top - cRect.top) + 'px';
