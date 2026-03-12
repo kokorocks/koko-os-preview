@@ -1,12 +1,13 @@
 isDragging = false;
+let overDeleteZone = false;
 let dragTimer = null;
 let dragGhost = null;
 let dragSrc = null; // { loc, p, i }
-let overDeleteZone = false;
+let pendingSlot = null;
+let pressTimer = null;
 const HOLD_DELAY = 500;   // ms (iOS-like)
 const MOVE_THRESHOLD = 60; // px
-let pressTimer = null;
-let pendingSlot = null;
+const FAR_DRAG_THRESHOLD = 10; // px, adjust as you want
 
 // At the top of your file
 //let dock = JSON.parse(localStorage.getItem('dock')) || [null, null, null, null];
@@ -233,10 +234,7 @@ function handleMove(e) {
         }
         return;
     }else if (dx < MOVE_THRESHOLD || dy < MOVE_THRESHOLD){
-            alert(1)
-
-            //this is the case where the user is trying to drag but hasn't moved enough yet. We can choose to either do nothing (allowing them to continue dragging) or we could cancel the drag if they move back within the threshold. For now, we'll just allow them to continue dragging.
-            
+            //alert(1)
         }
 
     if (e.cancelable) e.preventDefault();
@@ -324,6 +322,14 @@ function handleEnd(e) {
 
     const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
     const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+
+    const dx = x - startX;
+    const dy = y - startY;
+    const dragDistance = Math.hypot(dx, dy);
+
+    const draggedVeryFar = dragDistance < FAR_DRAG_THRESHOLD;
+    console.log(dx, dy, dragDistance, draggedVeryFar, startX, startY, x, y);
+    if (draggedVeryFar) alert(1)
 
     if (dragGhost) dragGhost.style.display = 'none';
 
