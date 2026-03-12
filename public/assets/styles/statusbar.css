@@ -115,7 +115,7 @@
     height: 12px;
     border: 1.5px solid white;
     border-radius: 4.5px;
-    padding: 1px;
+    padding: 1.5px;
     box-sizing: border-box;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
 }
@@ -134,7 +134,7 @@
 
 /* Battery Fill */
 .level {
-    height: 98%;
+    height: 100%;
     width: 86%; /* This controls the charge level */
     background: #19b44a; /* Green for charging/full */
     border-radius: 2px;
