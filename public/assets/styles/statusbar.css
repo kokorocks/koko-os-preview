@@ -39,7 +39,7 @@
     width:28px;
     height:12px;
     border:1.5px solid #f1f1f1;
-    border-radius:4px;
+    border-radius:4.5px;
     padding:1px;
     padding-right:1.5px;
     padding-left: 1.5px;
@@ -79,4 +79,69 @@
 .percent{
     margin-left:8px;
     font-size:18px;
+}
+/* Container - Fixed naming mismatch */
+.status-bar {
+    width: 100%;
+    margin: 10px auto;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white; /* Matching the white text in your image */
+    font-family: sans-serif;
+    user-select: none;
+    touch-action: none;
+    pointer-events: none;
+}
+
+/* Left side (Time) */
+.left {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Right side (Icons group) */
+.right {
+    display: flex;
+    align-items: center;
+    gap: 2px; /* Space between Wifi, Battery, and Percent */
+}
+
+/* Battery Shell */
+.battery {
+    position: relative;
+    width: 25px;
+    height: 12px;
+    border: 1.5px solid white;
+    border-radius: 4.5px;
+    padding: 1px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+}
+
+/* Battery Tip */
+.battery::after {
+    content: "";
+    position: absolute;
+    right: -3.5px;
+    top: 2.5px;
+    width: 2.5px;
+    height: 4px;
+    background: white;
+    border-radius: 0 1px 1px 0;
+}
+
+/* Battery Fill */
+.level {
+    height: 98%;
+    width: 86%; /* This controls the charge level */
+    background: #19b44a; /* Green for charging/full */
+    border-radius: 2px;
+}
+
+/* Text styles */
+.percent {
+    font-size: 14px;
+    font-weight: 500;
 }

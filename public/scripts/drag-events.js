@@ -233,7 +233,10 @@ function handleMove(e) {
         }
         return;
     }else if (dx < MOVE_THRESHOLD || dy < MOVE_THRESHOLD){
-            //alert(1)
+            alert(1)
+
+            //this is the case where the user is trying to drag but hasn't moved enough yet. We can choose to either do nothing (allowing them to continue dragging) or we could cancel the drag if they move back within the threshold. For now, we'll just allow them to continue dragging.
+            
         }
 
     if (e.cancelable) e.preventDefault();
