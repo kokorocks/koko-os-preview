@@ -1,0 +1,277 @@
+/* app css */
+/* Hide text labels in the dock */
+.app-slot[data-loc="dock"] .icon-label { display: none; }
+
+.app-slot.app-icon {
+  width: var(--item-size);
+  height: var(--item-size);
+}
+
+.widget-container {
+  width: auto;
+  height: auto;
+}
+
+.app-slot {
+  touch-action: none;
+  user-select: none;
+
+    /*width: var(--app-size); height: var(--app-size);*/
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    transition: transform 0.2s;
+    /*backdrop-filter: blur(10px);*/
+
+}
+
+
+.page,
+.app-slot,
+.widget {
+    contain: layout paint style;
+}
+
+.page {
+    content-visibility: auto;
+    contain-intrinsic-size: 100vh;
+}
+
+
+
+/* --- Home Pages Container --- */
+.pages-slider {
+    display: flex;
+    width: 100%; height: 100%;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+
+.page {
+    min-width: 100%; height: 100%;
+    padding-top: 60px;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols), 1fr);
+    grid-template-rows: repeat(var(--grid-rows), 1fr);
+    padding-left: var(--gap); padding-right: var(--gap);
+}
+
+/* --- App Icons --- */
+
+.dock-app-slot{
+    width: var(--app-size); height: var(--app-size);
+}
+
+.app-icon {
+    width: var(--app-size); height: var(--app-size);
+    border-radius: var(--app-icon-border-radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; color: white;
+    background-size: cover;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    position: relative;
+    /*border: 1px solid rgba(255,255,255,0.25);*/
+    backdrop-filter: blur(10px);
+}
+
+.installing {
+    position: relative;
+    isolation: isolate;
+    filter:
+        drop-shadow(0 0 3px #4cc9f0)
+        drop-shadow(0 0 7px #7cffc4);
+    animation:
+        install-pulse 2.4s ease-in-out infinite,
+        install-hue 6s linear infinite;
+        
+    background: rgba(86, 86, 86, 0.189);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 12px;
+
+}
+
+/* Glow + energy ring */
+.installing::after {
+    content: "";
+    position: absolute;
+    inset: -35%;
+    border-radius: 50%;
+    background:
+        conic-gradient(
+            from 0deg,
+            transparent,
+            #4cc9f0,
+            #7cffc4,
+            #ff4ecd,
+            transparent
+        );
+    filter: blur(14px);
+    opacity: 0.8;
+    animation: install-spin 3.6s linear infinite;
+    z-index: -1;
+}
+
+/* 🔁 Animations */
+@keyframes install-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes install-pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter:
+            drop-shadow(0 0 3px #4cc9f0)
+            drop-shadow(0 0 7px #7cffc4);
+    }
+    50% {
+        transform: scale(1.05);
+        filter:
+            drop-shadow(0 0 12px #ff4ecd)
+            drop-shadow(0 0 28px #4cc9f0);
+    }
+}
+
+@keyframes install-hue {
+    from { filter: hue-rotate(0deg); }
+    to   { filter: hue-rotate(360deg); }
+}
+
+
+.app-name {
+    font-size: 11px; margin-top: 6px; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    text-align: center; width: 66px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+/* Folder Mini-Grid */
+.folder-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3px;
+    padding: 9px; width: 100%; height: 100%;
+}
+.mini-icon {
+    width: 100%; height: 100%; border-radius: var(--mini-app-icon-border-radius);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 10px; color: white;
+}
+
+/* --- Widget Container --- */
+.widget-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.widget-container.active {
+    transform: scale(0.95);
+}
+
+.widget-container:hover {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.widget-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent !important;
+    pointer-events: none;
+}
+
+/* --- Dock --- */
+.dock {
+    position: absolute; bottom: 14px; left: 15px; right: 15px;
+    height: 80px;
+    /*background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);*/
+    border-radius: 32px;
+    display: flex; justify-content: space-around; align-items: center;
+    z-index: 500;
+    /*border: 1px solid rgba(255,255,255,0.1);*/
+}
+
+/* --- Dragging Ghost --- */
+.dragging-clone {
+    position: fixed; pointer-events: none; z-index: 9999;
+    transform: scale(1.1); opacity: 0.9; width: 100; height: 100;
+
+    position: fixed;
+    pointer-events: none;   /* 🔥 REQUIRED */
+    z-index: 9999;
+
+    z-index: 1000;
+    opacity: 0.8;
+    transition: none !important;
+}
+
+#multiappsarea {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* Allow underlying gestures */
+}
+
+#delete-zone{
+    position: absolute;
+    background-image: linear-gradient(rgb(255, 0, 0), rgba(255,255,255,0));
+    top: 0;
+    width: 100%;
+    height: 45px;
+    display: none;
+}
+
+#delete-zone.active{
+    display: flex;
+}
+
+.installing>*{
+    transform: scale(0.5);
+}
+
+.hidden {
+    display: none !important;
+    opacity: 0 !important;
+}
+
+/* Add to your existing CSS */
+
+
+
+/* Installing Animation */
+@keyframes pulse-installing {
+    0%, 100% {
+        opacity: 0.75;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
+.app-icon-container.installing {
+    animation: pulse-installing 2s ease-in-out infinite;
+    position: relative;
+}
+
+.app-icon-container.installing::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

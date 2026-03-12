@@ -1,0 +1,113 @@
+/* preview area styles */
+
+        /*#multiappsarea { display: none; }*/
+.is-dragging {
+    transition: none !important;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Natural spring-back animation */
+.snap-back {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                border-radius 0.4s ease, 
+                opacity 0.4s ease !important;
+}
+
+#multiappspreviewarea {
+    position: absolute;
+    inset: 0;
+    display: flex;           /* flex layout for horizontal scrolling */
+    /*align-items: center;*/
+    align-items: flex-start; /* push to top */
+    padding-top: 50px;       /* add some offset from top */
+    overflow-x: auto;        /* horizontal scrolling */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch; 
+    backdrop-filter: blur(0px);
+    transition: all 0.3s ease;
+    padding: 0 50%; /* half the container width */
+    box-sizing: content-box; /* important so padding doesn’t shrink children */
+    pointer-events: none;    /* default: let clicks pass through */
+    opacity: 0;              /* default: hidden */
+    scrollbar-width: none; 
+    z-index: 499;
+}
+
+#multiappspreviewarea::-webkit-scrollbar { display: none; }
+
+
+#multiappspreviewarea > .app-wrapper {
+    margin-top: 50px; /* shift all apps up */
+}
+
+
+/* When preview is open */
+#multiappspreviewarea.open {
+    pointer-events: auto;    /* only capture clicks when open */
+    opacity: 1;
+    backdrop-filter: blur(5px);
+}
+
+.app-wrapper {
+    z-index: 999999999999999999999999999; /* comically large number just because {: */
+    pointer-events: auto;
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    cursor: grab;
+
+    width: 250px;
+    height: 75%;
+    flex: 0 0 auto;
+    position: relative;
+    scroll-snap-align: center;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s;
+
+}
+
+.app-wrapper iframe {
+    pointer-events: auto; /* allow clicking iframe once centered */
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    border: none;
+    background: black;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    pointer-events: none; /* Allows dragging the wrapper without iframe interference */
+}
+/* Focused app style */
+.app-wrapper.centered {
+    opacity: 1;
+    /*transform: scale(1.05);*/
+}
+.app-wrapper:not(.centered) {
+    opacity: 0.6;
+    transform: scale(0.945);
+}
+
+/* Dragging state */
+.dragging {
+    transition: none !important;
+    z-index: 1000;
+}
+
+.bouncing {
+    /* This curve creates an 'overshoot' effect */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), 
+                opacity 0.3s ease !important;
+}
+
+.preview-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    margin-bottom: -25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: center;
+    color: white;
+    font-size: 24px;
+    flex-shrink: 0;
+    z-index: 900;
+}

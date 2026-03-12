@@ -1,0 +1,407 @@
+
+/* Notification Shade (Top) */
+#notifShade {
+    top: 0; height: 100%;
+    width: 100%;
+    transform: translateY(-100%);
+    padding: 0;
+    overflow: hidden;
+    /* More transparent, lighter background */
+    background: rgba(20, 20, 25, 0.253); 
+    /* Heavier blur for readability without darkness */
+    backdrop-filter: blur(24px) saturate(115%);
+    -webkit-backdrop-filter: blur(24px) saturate(115%);
+    padding: 15px 18px; /* Tighter padding */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: white;
+    /* Subtle border for definition */
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+.control-row {
+  display: flex;
+  gap: 12px;
+  
+  margin-bottom: 25px
+/* --- Notification UI --- */
+}
+
+#notifShade.open { transform: translateY(0); }
+
+/* Scrollable content area for notifShade */
+#notifShade .shade-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 50px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100% - 40px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Non-scrollable footer area for notifShade */
+#notifShade .shade-footer {
+    height: 40px;
+    flex-shrink: 0;
+    background: transparent;
+    padding: 0;
+}
+
+/* TWO-STATE SHADE SYSTEM */
+.shade-state {
+    display: none;
+}
+
+.shade-state.active {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* COMPACT STATE */
+#shade-compact.active {
+    height: auto;
+    max-height: 35vh;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.shade-header-compact {
+    display: flex;
+    justify-content: center;
+    padding: 5px 0;
+}
+
+.time-compact {
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+}
+
+.quick-settings-compact { /*come back to this*/
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+
+.notif-section-compact {
+    max-height: 120px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* EXPANDED STATE */
+#shade-expanded.active {
+    height: auto;
+    max-height: 100vh;
+    overflow-y: auto;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+/* App Drawer (Bottom) */
+#appDrawer {
+    top: 0; height: 100%;
+    transform: translateY(100%);
+    padding: 60px 20px 20px 20px;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+#appDrawer.open { transform: translateY(0); }
+
+
+.drawer-list {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    overflow-y: auto; padding-bottom: 50px;
+}
+
+
+.notif-item {
+    background: rgba(255,255,255,0.1); border-radius: 16px; padding: 15px;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+}
+
+.qs-grid-expanded {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.qs-tile {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: white;
+    font-size: 20px;
+    border: 0;
+}
+
+/* Toggle tiles */
+.qs-tile.is-toggle {
+    background: rgba(255,255,255,0.12);
+}
+
+/* ON state */
+.qs-tile.is-toggle.active {
+    background: linear-gradient(
+        135deg,
+        rgba(0,122,255,0.45),
+        rgba(0,200,255,0.35)
+    );
+    /*box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.25),
+        0 8px 20px rgba(0,122,255,0.25);*/
+}
+
+/* Icon glow when ON */
+.qs-tile.is-toggle.active i {
+    filter: drop-shadow(0 0 6px rgba(0,180,255,0.8));
+}
+
+
+.qs-tile span {
+    font-size: 9px;
+    text-align: center;
+    line-height: 1.1;
+    opacity: 0.85;
+}
+
+.qs-tile:active {
+    background: rgba(255,255,255,0.25);
+    transform: scale(0.92);
+}
+
+/* Header */
+.shade-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 5px; padding: 0 4px;
+}
+.time-stack { display: flex; flex-direction: column; }
+.clock-large { font-size: 26px; font-weight: 500; line-height: 1; }
+.date-small { font-size: 13px; opacity: 0.7; font-weight: 500; text-transform: uppercase; margin-top: 2px;}
+
+.shade-actions { display: flex; gap: 15px; }
+.icon-btn-ghost { 
+    width: 36px; height: 36px; border-radius: 50%; 
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+}
+
+/* --- Grouping Container (The "Card") --- */
+.shade-group {
+    background: rgba(0, 0, 0, 0.2); /* Very subtle separation */
+    border-radius: 24px;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* 1. Main Grid (WiFi/BT) */
+.qs-grid-main {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 12px;
+}
+
+.qs-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 18px; /* Compact radius */
+    height: 60px; /* Reduced height */
+    display: flex; align-items: center;
+    padding: 0 14px; gap: 12px;
+    cursor: pointer; transition: 0.2s;
+}
+
+.icon-box {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 14px;
+}
+
+.text-box { display: flex; flex-direction: column; }
+.qs-title { font-size: 13px; font-weight: 600; }
+.qs-status { font-size: 11px; opacity: 0.6; }
+
+/* Active States */
+input:checked + .qs-pill { background: var(--accent); }
+input:checked + .qs-pill .icon-box { background: rgba(255,255,255,0.25); }
+input:checked + .qs-pill .qs-status { opacity: 0.9; }
+
+/* 2. Small Toggles */
+.qs-row-small {
+    display: flex; justify-content: space-between;
+    margin-bottom: 16px; padding: 0 4px; /* Align visual edges */
+}
+
+.qs-btn-round {
+    width: 48px; height: 48px;
+    border-radius: 50%; /* Circles are more compact/friendly than squares */
+    background: rgba(255, 255, 255, 0.08);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 18px; cursor: pointer; transition: 0.2s;
+}
+
+input:checked + .qs-btn-round { background: white; color: black; }
+
+/* 3. Sliders (Compact) */
+.sliders-stack { display: flex; flex-direction: column; gap: 10px; }
+
+.slider-container {
+    height: 40px; /* Slimmer */
+    position: relative;
+    display: flex; align-items: center;
+}
+
+.slider-icon {
+    position: absolute; left: 14px; 
+    z-index: 2; font-size: 14px; opacity: 0.8; pointer-events: none;
+}
+
+.glass-slider {
+    -webkit-appearance: none;
+    width: 100%; height: 100%;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    overflow: hidden; outline: none; margin: 0;
+}
+
+/* Slider Fill Effect */
+.glass-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 0; height: 0;
+    box-shadow: -100vw 0 0 100vw rgba(255,255,255,0.9);
+}
+
+/* --- Media Player (Compact) --- */
+.media-compact {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; /* Slimmer padding */
+}
+
+.media-art {
+    width: 42px; height: 42px; border-radius: 10px;
+    background-size: cover;
+}
+
+.media-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.media-track { font-size: 13px; font-weight: 600; }
+.media-artist { font-size: 11px; opacity: 0.6; }
+
+.media-actions { display: flex; gap: 18px; font-size: 16px; margin-right: 5px; opacity: 0.9; }
+
+/* --- Notifications --- */
+.notif-section { margin-top: 5px; flex: 1; overflow: hidden; width: 100%; padding: 0 12px; }
+.notif-label { 
+    font-size: 11px; font-weight: 700; 
+    opacity: 0.6; margin-left: 0; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.7px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.glass-notif {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.glass-notif:active {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(0.98);
+}
+
+.notif-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.notif-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.notif-title {
+    font-weight: 600;
+    color: white;
+    line-height: 1.2;
+    font-size: 15px;
+}
+
+.notif-desc {
+    font-size: 13px;
+    opacity: 0.7;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.3;
+}
+
+.notif-time {
+    font-size: 11px;
+    opacity: 0.5;
+    align-self: flex-start;
+    margin-top: 0;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Handle */
+.close-handle {
+    width: 36px; height: 4px; background: rgba(255,255,255,0.3);
+    border-radius: 4px; align-self: center; margin-top: auto;
+    cursor: pointer;
+}
+
+/* Quick Settings Compact Buttons */
+.qs-btn-small {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.qs-btn-small:active,
+.qs-btn-small.active {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(0.95);
+}

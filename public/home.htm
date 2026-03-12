@@ -8,9 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="minscripts/hammer.min.js"></script>
-
+    <!-- main css -->
     <link rel="stylesheet" href="assets/styles/style.css">
 
+
+    <link rel="stylesheet" href="assets/styles/apps.css">
+    <link rel="stylesheet" href="assets/styles/folder.css">
+    <link rel="stylesheet" href="assets/styles/appframes.css">
+    <link rel="stylesheet" href="assets/styles/infopopup.css">
+    <link rel="stylesheet" href="assets/styles/previewarea.css">
+    <link rel="stylesheet" href="assets/styles/quicksettings.css">
+    <link rel="stylesheet" href="assets/styles/systemnotification.css">
+    <link rel="stylesheet" href="assets/styles/appwidgets.css">
+    <link rel="stylesheet" href="assets/styles/statusbar.css">
 
 </head>
 <body>
@@ -26,7 +36,12 @@
 
         <div class="status-bar">
             <span id="clockTime">12:00</span>
-            <span><i class="fas fa-wifi"></i>&nbsp; <i class="fas fa-battery-full"></i></span>
+            <span><i class="fas fa-wifi"></i>
+            <div class="battery" id="batteryIcon">
+                <div class="level"></div>
+            </div>
+            <span class="percent">86%</span>
+        </span>
         </div>
 
         <div class="overlay-panel" id="notifShade">
@@ -211,7 +226,29 @@
            <div id="right-guard" class="gesture-guard"></div>
         </div>
     </div>
+<script type="text/javascript" charset="utf-8">
+  let batteryLevel = 62; // Example battery level
+  const lvl=document.querySelector('.level')
+  const percent=document.querySelector('.percent')
+  percent.textContent = batteryLevel + '%';
+  lvl.style.width = batteryLevel + '%';
+  switch (true) {
+    case batteryLevel < 20:
+      lvl.style.backgroundColor = '#ff0000'; // Low battery color
+      break;
+    case batteryLevel <30:
+      lvl.style.backgroundColor = '#ffcc00'; // Medium battery color
+      break;
+    case batteryLevel < 80:
+      lvl.style.backgroundColor = '#19b44a'; // High battery color
+      break;
 
+    default:
+      lvl.style.backgroundColor = '#34C759'; // Full battery color
+
+  }
+  
+</script>
     <script src="scripts/config.js"></script>
     <script src="scripts/app-widget.js"></script>
     <script src="scripts/extensions.js"></script>

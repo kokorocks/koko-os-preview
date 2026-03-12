@@ -189,6 +189,7 @@ function renderAppPreviews() {
         //colorScheme==='dark' ? icon.style.boxShadow=  '0 4px 10px rgba(0,0,0,0.5)' : icon.style.boxShadow='0 4px 10px rgba(0,0,0,0.2)';
         colorScheme==='dark' ? icon.style.color=  'white' : icon.style.color='black';
         icon.innerHTML = `<i class="fas ${appDB[app.classList[0].toLowerCase()].icon}"></i>`;
+        icon.onclick = (e) => {alert('clicked icon for', app.classList[0])}
         if (appDB[app.classList[0].toLowerCase()].icon && appDB[app.classList[0].toLowerCase()].icon.startsWith('img:')) {
             const img = document.createElement('img');
             img.src = appDB[app.classList[0].toLowerCase()].icon.slice(4);

@@ -374,6 +374,10 @@ function openApp(id, data, splitView = false, change = 0, transition = true) {
         if (transition) el.style.transform = 'translateY(25vh) scale(0.4)';
         el.style.opacity = transition ? '0' : '1';
         if (transition) el.offsetHeight;
+                    //el.style.touchAction = 'auto';
+            el.style.pointerEvents = 'all';
+            el.style.userSelect = 'auto';
+            //el.style.pointerEvents = 'auto';
 
         el.style.transition = '';
         transition ? el.classList.add('open') : el.classList.add('open-no-transition');

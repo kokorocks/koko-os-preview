@@ -1,0 +1,82 @@
+/*status bar css*/
+
+.statusbar{
+    width:520px;
+    margin:40px auto;
+    padding:14px 20px;
+    background:#f5f5f5;
+    border-radius:5px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* left side icons */
+
+.left{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+/* icon style */
+
+.icon{
+    width:26px;
+    height:12px;
+    stroke:#f1f1f1;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    fill:none;
+}
+
+/* battery */
+
+.battery{
+    position:relative;
+    width:28px;
+    height:12px;
+    border:1.5px solid #f1f1f1;
+    border-radius:4px;
+    padding:1px;
+    padding-right:1.5px;
+    padding-left: 1.5px;
+    box-sizing:border-box;
+}
+
+.battery::after{
+    content:"";
+    position:absolute;
+    right:-4px;
+    top: 1.5px;
+    width:4px;
+    height:6px;
+    background:#f1f1f1;
+    border-radius:2px;
+}
+
+.level{
+    height:99.5%;
+    width:86%;
+    background:#ffffff;
+    border-radius:2px;
+}
+
+/* battery states */
+
+.low .level{
+    background:#ff9f00;
+}
+
+.charging .level{
+    background:#19b44a;
+}
+
+/* text */
+
+.percent{
+    margin-left:8px;
+    font-size:18px;
+}

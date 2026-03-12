@@ -1,0 +1,346 @@
+/* System Notification */
+.system-notif {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-150px);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 320px;
+    max-width: 320px;
+    z-index: 9000;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    touch-action: pan-y;
+    box-sizing: border-box;
+}
+
+.system-notif.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.system-notif .notif-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.system-notif .notif-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.system-notif .notif-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+}
+
+.system-notif .notif-desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 2px;
+}
+
+.system-notif .notif-dismiss-hint {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.system-notif {
+    pointer-events: auto;
+    touch-action: pan-y;
+    touch-action: pan-x;
+}
+
+/* Base System Notification Style */
+.system-notif {
+    position: absolute; /* use absolute inside phone frame */
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-150px);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: calc(100% - 40px); /* leave some padding inside the phone */
+    max-width: 320px; /* fits nicely in your 360px phone */
+    z-index: 99;
+
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+    opacity: 0;
+}
+
+/* Show animation */
+.system-notif.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+/* Icon box */
+.system-notif .notif-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Content */
+.system-notif .notif-content {
+    flex: 1;
+}
+
+.system-notif .notif-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    margin-bottom: 4px;
+}
+
+/* Button style */
+.system-notif button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+    max-width: 85% !important;
+}
+
+.system-notif button:hover {
+    opacity: 0.85;
+}
+
+/* Confirm/Prompt button colors */
+.system-notif button.confirm {
+    background: #0a84ff;
+    color: white;
+}
+
+.system-notif button.cancel {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+/* Input for prompt */
+.system-notif input {
+    width: 95%;
+    padding: 6px 8px;
+    border-radius: 10px;
+    border: none;
+    margin-top: 6px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 13px;
+}
+
+.system-notif input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+#appLiftLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 2000;          /* ABOVE dock */
+    pointer-events: none;
+}
+
+#appLiftLayer.active {
+    pointer-events: auto;
+}
+
+
+/* SYSTEM NOTIFICATIONS - BELOW STATUS BAR WITH ANIMATION */
+.phone-frame .system-notif {
+    position: absolute;            /* attached inside phone frame */
+    top: 12px;                     /* below status bar */
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px); /* start above view */
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 35px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: calc(100% - 30px);      /* phone padding */
+    max-width: 320px;
+    z-index: 1000;                 /* BELOW status bar (99999) */
+    opacity: 0;
+    pointer-events: auto;
+
+    /* Smooth slide-down + fade-in */
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), 
+                opacity 0.35s ease;
+}
+
+/* Show/animate notification */
+.phone-frame .system-notif.show {
+    transform: translateX(-50%) translateY(0); /* slide down into view */
+    opacity: 1;
+}
+
+/* Icon box */
+.phone-frame .system-notif .notif-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    background: rgba(255,255,255,0.1);
+    flex-shrink: 0;
+}
+
+/* Content */
+.phone-frame .system-notif .notif-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.phone-frame .system-notif .notif-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    margin-bottom: 2px;
+}
+
+
+/* Buttons container */
+.phone-frame .system-notif .notif-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    justify-content: flex-end;
+}
+
+/* Buttons */
+.phone-frame .system-notif button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.phone-frame .system-notif button.confirm {
+    background: #0a84ff;
+    color: white;
+}
+
+.phone-frame .system-notif button.cancel {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+/* Input for prompt */
+.phone-frame .system-notif input {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.phone-frame .system-notif input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+.system-notif {
+    position: fixed;
+    top: 16px; /* distance from top */
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    background: rgba(30, 30, 30, 0.95);
+    color: white;
+    backdrop-filter: blur(12px);
+    border-radius: 34px;
+    padding: 14px 20px;
+    max-width: 320px; /* compact width */
+    width: min(90%, 320px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    z-index: 9999;
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+    font-family: system-ui, sans-serif;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+
+.system-notif.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.notif-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    width: 100%;
+}
+
+.notif-buttons button {
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.notif-buttons button.confirm {
+    background: #0a84ff;
+    color: white;
+}
+
+.notif-buttons button.cancel {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.notif-buttons button:hover {
+    opacity: 0.85;
+}
+
+.notif-input {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 13px;
+}

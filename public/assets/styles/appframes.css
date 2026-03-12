@@ -1,0 +1,64 @@
+/* appframe css */
+#appFrame {
+    will-change: transform, opacity border-radius;
+    transform-origin: center bottom;
+    /* Starting State (Hidden/Small) */
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+    pointer-events: none; /* Prevent clicking while closed */
+    touch-action: none; /* Allow gestures to pass through */
+    
+    /* Layout */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: var(--radius);
+    background: white;
+    z-index: 500;
+
+    /* Animation Settings */
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+
+#appFrame.open {
+    /* Ending State (Visible/Full) */
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+    touch-action: none; /* Allow gestures to pass through */
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); 
+}    /* Closing animation */
+
+#appFrame.open-no-transition {
+    /* Ending State (Visible/Full) */
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+    touch-action: none; /* Allow gestures to pass through */
+}    
+
+#appFrame.closing {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#closed.closed {
+    display: none;
+}
+
+#appFrame.preview {
+    opacity: 0.8;
+    transform: scale(0.95) translateY(10px);
+    pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+/* 1. Prevent transitions while dragging so it follows finger 1:1 */
+/* Prevent transition lag during manual dragging */
+
+#appFrame, #notifShade, #appDrawer {
+    will-change: transform, opacity, border-radius;
+}

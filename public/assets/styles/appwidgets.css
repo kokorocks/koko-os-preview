@@ -1,0 +1,163 @@
+/* app widget styles */
+
+.widget-iframe,
+.widget-iframe * {
+  pointer-events: none !important;
+}
+
+.widget-wrapper {
+    position: absolute;
+    top: 10vh;
+    left: 50vw;
+    transform: translateX(-50%);
+    width: 380px;
+    height: 520px;
+    user-select: none;
+    box-sizing: border-box;
+    z-index: 9999 !important;
+}
+
+.widget-box {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 20px 50px;
+    z-index: 2;
+    box-sizing: border-box;
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.drag-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 10px;
+    gap: 6px;
+    cursor: grab;
+    z-index: 10;
+    background: transparent;
+}
+
+.drag-handle:active { cursor: grabbing; }
+
+.wdot {
+    width: 4px;
+    height: 4px;
+    background-color: #272727;
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+.content-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.controls-overlay {
+    width: 65px;
+    height: 30px;
+    position: absolute;
+    top: -5px;
+    right: calc(50% - 120px);
+    display: none; 
+    gap: 5px;
+    padding: 5px 8px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+
+.control-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.control-btn:hover { transform: scale(1.1); }
+.btn-close { background-color: #4c4646; color: #fff; }
+.btn-min { background-color: #ffbd2e; color: #fff; }
+
+/* --- MOBILE & HOVER RESIZE FIXES BELOW --- */
+
+.resize-handle {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    z-index: 10000 !important;  /* ← way above everything */
+    cursor: pointer;
+    color: #1a1a1a;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.4)); 
+    opacity: 0;
+    pointer-events: auto; /* Allow touch on mobile */
+    transition: opacity 0.2s ease;
+}
+
+.resize-left {
+    transform: rotate(-90deg) scale(0.75);
+    bottom: -15px;
+    left: -15px;
+    cursor: sw-resize;
+    z-index: 10000 !important;
+}
+
+.resize-right {        
+    transform: rotate(90deg) scale(0.75);
+    bottom: -15px;
+    right: -15px;
+    cursor: se-resize;
+    z-index: 10000 !important;
+}
+
+.resize-handle svg {
+    width: 100%;
+    height: 100%;
+    stroke: #fff;
+    stroke-width: 4;
+    opacity: 0.9;
+}
+
+/* 1. Show handles when hovering over the widget (for Desktop) */
+.widget-wrapper:hover .resize-handle {
+    opacity: 1;
+}
+
+/* 2. Show handles when actively dragging/resizing (from JS class) */
+.widget-wrapper.interacting .resize-handle {
+    opacity: 1 !important;
+}
+
+/* 3. Safely detect mobile/touch screens to keep handles visible */
+@media (pointer: coarse) {
+    .resize-handle {
+        opacity: 0.7; /* Always partially visible on touch screens */
+    }
+    .resize-handle:active {
+        opacity: 1; /* Fully visible when touched */
+    }
+}
+
+.interacting .content-iframe { pointer-events: none; }
+
+.minimized { height: 60px !important; min-height: 60px !important; }
+.minimized .content-iframe { display: none; }
+.minimized .resize-handle { display: none !important; }
