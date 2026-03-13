@@ -269,8 +269,8 @@ function handleMove(e) {
 
         if (dragGhost) {
             // Center the ghost at the touch point
-            dragGhost.style.left = (x - dragGhost.offsetWidth / 2.75) + 'px';
-            dragGhost.style.top = (y - dragGhost.offsetHeight / 2.75) + 'px';
+            dragGhost.style.left = (x - dragGhost.offsetWidth / 2) + 'px';
+            dragGhost.style.top = (y - dragGhost.offsetHeight / 2) + 'px';
         }
 
         overDeleteZone = y < DELETE_ZONE_HEIGHT;
