@@ -109,6 +109,7 @@
 
 /* Battery Shell */
 .battery {
+    background-color: rgba(0,0,0,0.1);
     position: relative;
     width: 25px;
     height: 12px;
