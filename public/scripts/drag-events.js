@@ -329,7 +329,7 @@ function handleEnd(e) {
 
     const draggedVeryFar = dragDistance < FAR_DRAG_THRESHOLD;
     console.log(dx, dy, dragDistance, draggedVeryFar, startX, startY, x, y);
-    if (draggedVeryFar) alert(1)
+    //if (draggedVeryFar) alert(1)
 
     if (dragGhost) dragGhost.style.display = 'none';
 
@@ -409,6 +409,8 @@ console.log('distance:', dist);
         window.removeEventListener('touchmove', handleMove);
         window.removeEventListener('touchend', handleEnd);
     }
+
+    render();
 }
 
 function getItem(ref) {
@@ -456,6 +458,7 @@ function setItem(ref, val) {
         }
     }
     // we never write back to the drawer
+    render();
 }
 
 function handleDrop(src, tgt, forceMove = false) {

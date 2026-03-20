@@ -1,11 +1,5 @@
 /* folder css */
 
-
-.appsbar {
-    z-index: 999;position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
-    width: 175px; height: 5px; background: rgba(135, 135, 135, 0.733); border-radius:5px; 
-}
-
 /* --- Folder Modal --- */
 .folder-modal {
     position: absolute; inset: 0; z-index: 500;

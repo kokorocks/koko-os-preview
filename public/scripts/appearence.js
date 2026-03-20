@@ -5,10 +5,16 @@ let backgroundMove=true;
 //let backgroundImage = "/public/assets/images/boliviainteligente-37WxvlfW3to-unsplash.jpg"//'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80'
 let virtual_brightness=false;
 window.colorScheme='dark';//'light';
-let columns = 5;
+let columns = 4;
 let gridRows = 6;
 let isdock = true;
 let docklen = 4;
+let appSize = 2;
+
+let appSizes = [50, 55, 60]
+//22px
+
+if (appSize) document.documentElement.style.setProperty('--app-size', `${appSizes[appSize]}px`);
 
 if (isdock && docklen < 5) {
     document.getElementById('dock').style=`position: absolute; bottom: 14px; left: 15px; right: 15px;
@@ -24,7 +30,6 @@ if (isdock && docklen < 5) {
 
 document.documentElement.style.setProperty('--grid-cols', columns);
 document.documentElement.style.setProperty('--grid-rows', gridRows);
-
 
 //currentPage = 2
 

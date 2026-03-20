@@ -1,4 +1,5 @@
 const screen = document.getElementById('mainScreen');
+const appsbar = document.querySelector('.appsbar');
 const hammer = new Hammer(screen);
 
 hammer.get('pan').set({
@@ -218,6 +219,13 @@ function handleDragFrame() {
 
             activeApp.style.transform =
                 `translateY(${-pull * 0.6}px) scale(${1 - progress * 0.15})`;
+            const t = clamp(pull / (screenH * 0.5), 0, 1);
+
+            // smooth easing (no trig)
+            const eased = 1 - Math.pow(1 - t, 3);
+                    
+            appsbar.style.transform =
+              `translateY(${-eased * 10}px) translateX(-50%)`;
             break;
         }
         /*case 'split_open': {
@@ -343,7 +351,7 @@ hammer.on('panend', (e) => {
             } else {
                 resetAppStyles(activeApp);
             }
-
+            appsbar.style.transform = `translateY(0) translateX(-50%)`;
             break;
         
         case 'split_open': {

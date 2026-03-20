@@ -10,7 +10,7 @@
     --folder-bg: rgba(255, 255, 255, 0.35);
     --accent: #007AFF;
     --radius: 36px;
-    --app-icon-border-radius: 14px;
+    --app-icon-border-radius: calc(var(--app-size) * (7 / 27));
     --mini-app-icon-border-radius: 3px;
     --background-image: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2670&auto=format&fit=crop') center/cover no-repeat;
 }
@@ -101,7 +101,10 @@ body {
 }
 
 
-
+.appsbar {
+    z-index: 999;position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 175px; height: 5px; background: rgba(135, 135, 135, 0.733); border-radius:5px;   transition: transform 0.1s ease; /* controls animation */
+}
 
 /* --- Status Bar --- */
 .status-bar {

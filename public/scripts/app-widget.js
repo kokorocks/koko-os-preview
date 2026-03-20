@@ -29,7 +29,7 @@ function getClientY(e) {
 }
 
 window.createWidget = function (
-    html = "<div></div>",
+    html = "<body></body>",
     x = '0px',
     y = '0px',
     width = '180px',
@@ -91,7 +91,7 @@ window.createWidget = function (
 
             </div>
 
-            <iframe class="content-iframe" srcdoc="${html}" style="width: 100%; height: 100%; border: none; pointer-events: auto;"></iframe>
+            <iframe class="content-iframe" style="width: 100%; height: 100%; border: none; pointer-events: auto;"></iframe>
 
         </div>
 
@@ -109,6 +109,7 @@ window.createWidget = function (
     `;
 
     const iframe = widget.querySelector('.content-iframe');
+    iframe.srcdoc = html; // ✅ SAFE
     iframe.style.cssText += css;
     container.appendChild(widget);
 
@@ -229,4 +230,4 @@ window.createWidget = function (
         widget.querySelector('.btn-min').textContent = widget.classList.contains('minimized') ? '+' : '−';
     };
 };
-createWidget("<div style='display:flex; flex-direction:column; align-items:center; justify-content:flex-start; height:100%; padding-top:20px; font-family:sans-serif;'><h1 style='margin:0; font-weight:400;'>00:16.46</h1><p style='color:#888; font-size:12px; margin-top:5px;'>High-quality</p><div style='width:80%; height:40px; margin:20px 0; background:repeating-linear-gradient(90deg, #b0d1eb, #b0d1eb 3px, transparent 3px, transparent 6px); opacity:0.6;'></div><div style='width:90%; background:#fff; box-shadow:0 4px 15px rgba(0,0,0,0.05); padding:15px; border-radius:15px; text-align:left;'><h4 style='margin:0 0 10px 0;'>AI Speech Recognition</h4><p style='margin:0; font-size:14px; color:#333;'>hi everyone great to be here today <b>i'm super</b></p></div></div>");
+//createWidget("<div style='display:flex; flex-direction:column; align-items:center; justify-content:flex-start; height:100%; padding-top:20px; font-family:sans-serif;'><h1 style='margin:0; font-weight:400;'>00:16.46</h1><p style='color:#888; font-size:12px; margin-top:5px;'>High-quality</p><div style='width:80%; height:40px; margin:20px 0; background:repeating-linear-gradient(90deg, #b0d1eb, #b0d1eb 3px, transparent 3px, transparent 6px); opacity:0.6;'></div><div style='width:90%; background:#fff; box-shadow:0 4px 15px rgba(0,0,0,0.05); padding:15px; border-radius:15px; text-align:left;'><h4 style='margin:0 0 10px 0;'>AI Speech Recognition</h4><p style='margin:0; font-size:14px; color:#333;'>hi everyone great to be here today <b>i'm super</b></p></div></div>");
