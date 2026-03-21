@@ -350,6 +350,15 @@ function handleEnd(e) {
     }
 
     const targetSlot = elBelow ? elBelow.closest('.app-slot') : null;
+    console.log('targetSlot:', targetSlot, 'elBelow:', elBelow);
+    try {
+    if(targetSlot.dataset.i > grid-1) {
+        console.log('invalid slot, treating as empty space drop');
+        targetSlot = null;
+    }}catch(err){
+        console.log('error accessing targetSlot dataset:', err);
+        targetSlot = null;
+    }
 
     if (targetSlot) {
         const tgtLoc = targetSlot.dataset.loc;
