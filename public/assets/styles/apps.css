@@ -190,7 +190,7 @@
 
 /* --- Dock --- */
 .dock {
-    position: absolute; bottom: 14px; left: 15px; right: 15px;
+    position: absolute; bottom: 8px; left: 15px; right: 15px;
     height: 80px;
     /*background: rgba(255,255,255,0.05);
     backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);*/

@@ -6,7 +6,7 @@ let backgroundMove=true;
 let virtual_brightness=false;
 window.colorScheme='dark';//'light';
 let columns = 4;
-let gridRows = 6;
+let gridRows = 7;
 let isdock = true;
 let docklen = 4;
 let appSize = 2;
@@ -17,7 +17,7 @@ let appSizes = [50, 55, 60]
 if (appSize) document.documentElement.style.setProperty('--app-size', `${appSizes[appSize]}px`);
 
 if (isdock && docklen < 5) {
-    document.getElementById('dock').style=`position: absolute; bottom: 14px; left: 15px; right: 15px;
+    document.getElementById('dock').style=`position: absolute; bottom: 9px; left: 15px; right: 15px;
     height: 80px;
     background: rgba(255,255,255,0.05);
     backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);

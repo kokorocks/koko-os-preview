@@ -102,8 +102,8 @@ body {
 
 
 .appsbar {
-    z-index: 999;position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
-    width: 175px; height: 5px; background: rgba(135, 135, 135, 0.733); border-radius:5px;   transition: transform 0.1s ease; /* controls animation */
+    z-index: 999;position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+    width: 25%; height: 5px; background: rgba(135, 135, 135, 0.733); border-radius:5px;   transition: transform 0.1s ease; /* controls animation */
 }
 
 /* --- Status Bar --- */
@@ -219,7 +219,7 @@ body {
     pointer-events: all;
 
     bottom: 0;
-    height: 15px;
+    height: 10px;
 
 }
 
