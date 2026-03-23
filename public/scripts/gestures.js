@@ -206,7 +206,9 @@ function handleDragFrame() {
 
             const progress = clamp(Math.abs(currentDeltaY) / 240, 0, 1);
             screen.style.transform = `scale(${1 - progress * 0.07})`;
-            screen.style.borderRadius = `${progress * 28}px`;
+            //screen.style.borderRadius = `${progress * 28}px`;
+            appsbar.style.transform =
+              `translateY(${-progress * 15}px) translateX(-50%)`;
             break;
         }
 
@@ -338,6 +340,7 @@ hammer.on('panend', (e) => {
                     if(!infoPopup.classList.contains('open') && document.getElementById('multiappsarea').innerHTML.length > 0) openAppPreviews(); // && document.getElementById('multiappspreviewarea').innerHTML.length > 0
                     //if(document.getElementById('multiappspreviewarea').innerHTML.length > 0) return
                     infoPopup.classList.remove('open')
+                    appsbar.style.transform = `translateY(0) translateX(-50%)`;
                 }
             }
             break;
