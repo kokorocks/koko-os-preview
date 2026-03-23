@@ -223,9 +223,9 @@ function handleDragFrame() {
 
             // smooth easing (no trig)
             const eased = 1 - Math.pow(1 - t, 3);
-                    
+
             appsbar.style.transform =
-              `translateY(${-eased * 10}px) translateX(-50%)`;
+              `translateY(${-eased * 35}px) translateX(-50%)`;
             break;
         }
         /*case 'split_open': {
