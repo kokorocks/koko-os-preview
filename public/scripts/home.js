@@ -185,12 +185,12 @@ if (batteryLevel < 20) {
         tile.dataset.id = item.id;
         tile.style.gridColumn = `${item.x + 1} / span ${size.columns}`;
         tile.style.gridRow = `${item.y + 1} / span ${size.rows}`;
-        tile.onmouseover = () => {
+        tile.onmousedown = () => {
             if (mouseoverlock) return;
             mouseoverlock = true;
         }
 
-        tile.onmouseleave = () => {
+        tile.onmouseup = () => {
             mouseoverlock = false;
         }
 
