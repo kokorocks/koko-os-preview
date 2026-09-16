@@ -108,7 +108,7 @@ hammer.on('panstart', (e) => {
             shadeIsMoving = true;
             shade.style.transition = 'none';
         } else {
-            if (e.target.closest(".overlay-panel") === ev.target) return;
+            //if (e.target.closest(".overlay-panel") === ev.target) return;
             // Otherwise close the shade
             activeGesture = 'shade_close';
             shadeIsMoving = true;
