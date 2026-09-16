@@ -108,7 +108,12 @@ hammer.on('panstart', (e) => {
             shadeIsMoving = true;
             shade.style.transition = 'none';
         } else {
+            if (mouseoverlock) return;
             //if (e.target.closest(".overlay-panel") === ev.target) return;
+            //if ( document.activeElement.classList.contains('cc-tile')) {
+            //    return;
+            //}
+            //console.log(document.activeElement);
             // Otherwise close the shade
             activeGesture = 'shade_close';
             shadeIsMoving = true;

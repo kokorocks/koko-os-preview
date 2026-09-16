@@ -2,7 +2,7 @@
 const batteryLevel = 62;
 const batteryLevelElement = document.querySelector('.level');
 const batteryPercentElement = document.querySelector('.percent');
-
+let mouseoverlock = false;
 batteryPercentElement.textContent = `${batteryLevel}%`;
 batteryLevelElement.style.width = `${batteryLevel}%`;
 
@@ -185,7 +185,14 @@ if (batteryLevel < 20) {
         tile.dataset.id = item.id;
         tile.style.gridColumn = `${item.x + 1} / span ${size.columns}`;
         tile.style.gridRow = `${item.y + 1} / span ${size.rows}`;
+        tile.onmouseover = () => {
+            if (mouseoverlock) return;
+            mouseoverlock = true;
+        }
 
+        tile.onmouseleave = () => {
+            mouseoverlock = false;
+        }
         if (state.edit) {
             const removeButton = document.createElement('button');
             removeButton.type = 'button';
