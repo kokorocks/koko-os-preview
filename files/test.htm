@@ -14,291 +14,541 @@
 <link rel="stylesheet" href="nova-ui.css"><!--NOVA_CSS-->
 
 <style id="app-css">
+  body {
+    padding-bottom: 30px;
+  }
   .view { display:none; }
-  .view.is-active { display:block; animation:view-in .4s var(--nova-ease) both; }
-  @keyframes view-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .view.is-active { display:block; animation:view-in .3s var(--nova-ease) both; }
+  @keyframes view-in { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:none; } }
 
-  .profile-header {
+  .profile-card {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 12px 18px 24px;
+    padding: 14px 18px;
+    background: var(--nova-surface);
+    border: 1px solid var(--nova-line);
+    border-radius: 20px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: background .2s ease;
   }
-  .profile-header .info h2 {
-    margin: 0 0 4px;
-    font-size: 20px;
+  .profile-card:active {
+    background: var(--nova-surface-2);
+  }
+  .profile-card .info {
+    flex: 1;
+  }
+  .profile-card .info h2 {
+    margin: 0 0 2px;
+    font-size: 18px;
     font-weight: 800;
-    letter-spacing: -.5px;
+    letter-spacing: -.4px;
   }
-  .profile-header .info p {
+  .profile-card .info p {
     margin: 0;
-    font-size: 13.5px;
+    font-size: 12.5px;
     font-weight: 600;
     color: var(--nova-muted);
   }
+
+  .swatch { display:flex; gap:8px; flex-wrap:wrap; }
 </style>
 </head>
 
 <body>
 
-<!-- ===================== GENERAL SETTINGS ===================== -->
-<main class="nova-screen view is-active" id="view-general">
-  <nova-appbar title="Settings" subtitle="System Configuration">
-    <nova-icon-button icon="magnifying-glass" label="Search" id="btn-search"></nova-icon-button>
+<!-- ===================== 1. MAIN SETTINGS HOME ===================== -->
+<main class="nova-screen view is-active" id="view-main">
+  <nova-appbar title="Settings" subtitle="NovaOS 2.1">
+    <nova-icon-button icon="magnifying-glass" label="Search" id="quick-search-btn"></nova-icon-button>
   </nova-appbar>
 
-  <div class="profile-header">
-    <nova-avatar name="Naomi Rahman" size="64" status="online" id="profile-avatar"></nova-avatar>
+  <!-- User Account Banner -->
+  <div class="profile-card" id="profile-row">
+    <nova-avatar name="Naomi Rahman" size="56" status="online"></nova-avatar>
     <div class="info">
       <h2>Naomi Rahman</h2>
-      <p>NovaID, Cloud & Purchases</p>
+      <p>NovaID, Cloud & Subscriptions</p>
     </div>
+    <i class="fa-solid fa-chevron-right" style="color:var(--nova-muted); font-size:13px;"></i>
   </div>
 
   <nova-search placeholder="Search settings..." id="main-search"></nova-search>
-  <div style="height:18px"></div>
+  <div style="height:16px"></div>
 
-  <nova-section title="Connectivity">
+  <!-- Software Update Alert Banner -->
+  <nova-banner tone="warn" icon="arrow-up-from-bracket" title="NovaOS 2.2 Available"
+    body="New features and critical security fixes are ready to install." action="Update Now"
+    id="update-banner"></nova-banner>
+
+  <!-- Connectivity Group -->
+  <nova-section title="Network & Connections" style="margin-top:20px">
     <nova-list>
-      <nova-row color="#2b7fff" icon="wifi" title="Wi-Fi" subtitle="Nova Home 5G" chevron id="nav-wifi"></nova-row>
-      <nova-row color="#2b7fff" icon="bluetooth-b" title="Bluetooth" value="On" chevron id="nav-bt"></nova-row>
-      <nova-row color="#1db954" icon="signal" title="Mobile Data" value="Active" chevron></nova-row>
-      <nova-row color="#ffc93c" icon="link" title="Personal Hotspot" value="Off" chevron></nova-row>
+      <nova-row color="#2b7fff" icon="wifi" title="Wi-Fi" subtitle="Nova Home 5G" chevron id="row-wifi"></nova-row>
+      <nova-row color="#2b7fff" icon="bluetooth-b" title="Bluetooth" value="On" chevron id="row-bt"></nova-row>
+      <nova-row color="#1db954" icon="signal" title="Mobile Data" value="5G Active" chevron id="row-cellular"></nova-row>
+      <nova-row color="#ffc93c" icon="link" title="Personal Hotspot" value="Off" chevron id="row-hotspot"></nova-row>
+      <nova-row color="#6b3df5" icon="shield-halved" title="VPN & Private Relay" value="Not Connected" chevron id="row-vpn"></nova-row>
     </nova-list>
   </nova-section>
 
-  <nova-section title="System & Personalisation" style="margin-top:22px">
+  <!-- Sound, Display & Customisation -->
+  <nova-section title="Sound & Appearance" style="margin-top:22px">
     <nova-list>
-      <nova-row color="#e50914" icon="bell" title="Notifications" chevron></nova-row>
-      <nova-row color="#6b3df5" icon="moon" title="Focus" value="Do Not Disturb" chevron></nova-row>
-      <nova-row color="#8b8b9e" icon="sliders" title="Control Centre" chevron></nova-row>
-      <nova-row color="#ff4d4d" icon="palette" title="Appearance" subtitle="Dark mode" chevron id="nav-appearance"></nova-row>
+      <nova-row color="#ff4d4d" icon="volume-high" title="Sounds & Haptics" subtitle="Ringtone: Reflection" chevron id="row-sounds"></nova-row>
+      <nova-row color="#6b3df5" icon="moon" title="Focus & Do Not Disturb" value="On" chevron id="row-focus"></nova-row>
+      <nova-row color="#ff9500" icon="palette" title="Appearance & Display" subtitle="Dark mode enabled" chevron id="row-appearance"></nova-row>
+      <nova-row color="#00c7be" icon="hourglass-half" title="Screen Time" value="3h 42m avg" chevron id="row-screentime"></nova-row>
     </nova-list>
   </nova-section>
 
-  <nova-section title="Security" style="margin-top:22px">
+  <!-- Device & System -->
+  <nova-section title="System & Power" style="margin-top:22px">
     <nova-list>
-      <nova-switch label="Face ID Unlocking" sublabel="Confirm access with your face" icon="face-smile" checked></nova-switch>
-      <nova-switch label="Location Services" sublabel="Used by 4 apps" icon="location-dot" checked></nova-switch>
+      <nova-row color="#1db954" icon="battery-three-quarters" title="Battery" value="88% • Normal" chevron id="row-battery"></nova-row>
+      <nova-row color="#8b8b9e" icon="gear" title="General & Storage" subtitle="About, Storage, Reset" chevron id="row-general"></nova-row>
+      <nova-row color="#2b7fff" icon="rotate" title="Software Update" tag="1 New" chevron id="row-update"></nova-row>
+    </nova-list>
+  </nova-section>
+
+  <!-- Security & Privacy -->
+  <nova-section title="Privacy & Safety" style="margin-top:22px">
+    <nova-list>
+      <nova-row color="#e50914" icon="face-smile" title="Face ID & Passcode" chevron id="row-faceid"></nova-row>
+      <nova-row color="#2b7fff" icon="lock" title="Privacy & Security" subtitle="Location, Camera, Mic" chevron id="row-privacy"></nova-row>
+      <nova-row color="#ffc93c" icon="triangle-exclamation" title="Emergency SOS" chevron id="row-sos"></nova-row>
     </nova-list>
   </nova-section>
 </main>
 
-<!-- ===================== APPEARANCE ===================== -->
-<main class="nova-screen view" id="view-appearance">
-  <nova-appbar title="Appearance" subtitle="Customise your display"></nova-appbar>
 
-  <nova-section title="Theme">
+<!-- ===================== 2. WI-FI DETAIL VIEW ===================== -->
+<main class="nova-screen view" id="view-wifi">
+  <nova-appbar title="Wi-Fi" subtitle="Wireless Connectivity">
+    <nova-icon-button icon="arrow-left" label="Back" class="back-btn"></nova-icon-button>
+  </nova-appbar>
+
+  <nova-card pad>
+    <nova-switch label="Wi-Fi" sublabel="Search and connect to networks" id="wifi-main-toggle" checked></nova-switch>
+  </nova-card>
+
+  <div id="wifi-content">
+    <nova-section title="Connected Network" style="margin-top:20px">
+      <nova-list>
+        <nova-row color="#2b7fff" icon="wifi" title="Nova Home 5G" subtitle="Security: WPA3 • Signal: Strong" chevron id="wifi-connected-item"></nova-row>
+      </nova-list>
+    </nova-section>
+
+    <nova-section title="Available Networks" style="margin-top:22px">
+      <nova-list>
+        <nova-row icon="lock" title="Office Corporate 5GHz" subtitle="Secured" chevron></nova-row>
+        <nova-row icon="lock" title="Studio Guest Wi-Fi" subtitle="Secured" chevron></nova-row>
+        <nova-row icon="unlock" title="Starbucks Free Wi-Fi" subtitle="Open network" chevron></nova-row>
+        <nova-row icon="lock" title="Neighbourhood Mesh" subtitle="Secured" chevron></nova-row>
+      </nova-list>
+    </nova-section>
+
+    <nova-section title="Preferences" style="margin-top:22px">
+      <nova-list>
+        <nova-switch label="Auto-Join Hotspots" sublabel="Connect automatically when Wi-Fi unavailable" checked></nova-switch>
+        <nova-switch label="Ask to Join Networks" sublabel="Notify when open networks are nearby" checked></nova-switch>
+      </nova-list>
+    </nova-section>
+  </div>
+</main>
+
+
+<!-- ===================== 3. BLUETOOTH DETAIL VIEW ===================== -->
+<main class="nova-screen view" id="view-bluetooth">
+  <nova-appbar title="Bluetooth" subtitle="Paired Devices">
+    <nova-icon-button icon="arrow-left" label="Back" class="back-btn"></nova-icon-button>
+  </nova-appbar>
+
+  <nova-card pad>
+    <nova-switch label="Bluetooth" sublabel="Discoverable as Naomi's NovaPhone" id="bt-main-toggle" checked></nova-switch>
+  </nova-card>
+
+  <div id="bt-content">
+    <nova-section title="My Devices" style="margin-top:20px">
+      <nova-list>
+        <nova-row icon="headphones" color="#6b3df5" title="NovaPods Max" value="Connected" chevron id="bt-item-pods"></nova-row>
+        <nova-row icon="car" color="#2b7fff" title="BMW iX Audio" value="Not Connected" chevron></nova-row>
+        <nova-row icon="keyboard" color="#8b8b9e" title="Magic Keyboard" value="Not Connected" chevron></nova-row>
+        <nova-row icon="watch" color="#1db954" title="Nova Watch Series 3" value="Connected" chevron></nova-row>
+      </nova-list>
+    </nova-section>
+
+    <nova-section title="Other Devices" style="margin-top:22px">
+      <nova-card pad style="display:flex; align-items:center; gap:12px">
+        <i class="fa-solid fa-spinner fa-spin" style="color:var(--nova-accent)"></i>
+        <span style="font-size:13.5px; font-weight:600; color:var(--nova-muted)">Searching for nearby bluetooth accessories...</span>
+      </nova-card>
+    </nova-section>
+  </div>
+</main>
+
+
+<!-- ===================== 4. SOUNDS & HAPTICS VIEW ===================== -->
+<main class="nova-screen view" id="view-sounds">
+  <nova-appbar title="Sounds & Haptics" subtitle="Audio & Feedback Settings">
+    <nova-icon-button icon="arrow-left" label="Back" class="back-btn"></nova-icon-button>
+  </nova-appbar>
+
+  <nova-card pad>
+    <nova-slider min="0" max="100" value="75" label="Media & Alert Volume" icon="volume-high" id="volume-slider"></nova-slider>
+    <div style="height:18px"></div>
+    <nova-slider min="0" max="100" value="60" label="Ringtone & Alarm Volume" icon="bell"></nova-slider>
+  </nova-card>
+
+  <nova-section title="Ringtones & Sounds" style="margin-top:22px">
+    <nova-list>
+      <nova-row title="Ringtone" value="Reflection" chevron id="row-ringtone"></nova-row>
+      <nova-row title="Text Tone" value="Chime" chevron></nova-row>
+      <nova-row title="New Voicemail" value="Pulse" chevron></nova-row>
+      <nova-row title="New Mail" value="Ding" chevron></nova-row>
+    </nova-list>
+  </nova-section>
+
+  <nova-section title="System Haptics" style="margin-top:22px">
+    <nova-list>
+      <nova-switch label="System Touch Feedback" sublabel="Vibrate on buttons and gestures" checked></nova-switch>
+      <nova-switch label="Keyboard Haptics" sublabel="Tactile vibration while typing" checked></nova-switch>
+      <nova-switch label="Lock Sound" sublabel="Play audio when locking screen" checked></nova-switch>
+    </nova-list>
+  </nova-section>
+</main>
+
+
+<!-- ===================== 5. APPEARANCE & DISPLAY VIEW ===================== -->
+<main class="nova-screen view" id="view-appearance">
+  <nova-appbar title="Appearance" subtitle="Theme & Display">
+    <nova-icon-button icon="arrow-left" label="Back" class="back-btn"></nova-icon-button>
+  </nova-appbar>
+
+  <nova-section title="Theme Mode">
     <nova-card pad>
-      <div style="font-size:13px; font-weight:700; margin-bottom:12px; color:var(--nova-muted);">SYSTEM THEME</div>
       <nova-segmented id="theme-seg" items="Light,Auto,Dark" value="Dark"></nova-segmented>
     </nova-card>
   </nova-section>
 
-  <nova-section title="Brightness & Display" style="margin-top:22px">
+  <nova-section title="Accent Color" style="margin-top:22px">
     <nova-card pad>
-      <nova-slider min="0" max="100" step="1" value="65" label="Brightness level" icon="sun"></nova-slider>
-      <div style="height:20px"></div>
-      <nova-switch label="True Tone" sublabel="Automatically adapt to ambient lighting conditions" checked></nova-switch>
-      <div style="height:12px"></div>
-      <nova-switch label="Raise to Wake" checked></nova-switch>
+      <div class="swatch">
+        <nova-chip label="Violet" icon="circle" active></nova-chip>
+        <nova-chip label="Ocean Blue" icon="circle"></nova-chip>
+        <nova-chip label="Emerald" icon="circle"></nova-chip>
+        <nova-chip label="Sunset Gold" icon="circle"></nova-chip>
+      </div>
     </nova-card>
   </nova-section>
 
-  <nova-section title="Text Size" style="margin-top:22px">
+  <nova-section title="Display & Brightness" style="margin-top:22px">
     <nova-card pad>
-      <nova-stepper label="Dynamic Type" value="3" min="1" max="7"></nova-stepper>
+      <nova-slider min="0" max="100" step="1" value="70" label="Screen Brightness" icon="sun"></nova-slider>
+      <div style="height:18px"></div>
+      <nova-switch label="True Tone" sublabel="Adapt screen color to ambient light" checked></nova-switch>
+      <div style="height:10px"></div>
+      <nova-switch label="Auto-Lock" sublabel="3 Minutes"></nova-switch>
+    </nova-card>
+  </nova-section>
+
+  <nova-section title="Text & Scale" style="margin-top:22px">
+    <nova-card pad>
+      <nova-stepper label="Dynamic Text Size" value="3" min="1" max="6"></nova-stepper>
+      <div style="height:14px"></div>
+      <nova-checkbox label="Bold Text Rendering" checked></nova-checkbox>
     </nova-card>
   </nova-section>
 </main>
 
-<!-- ===================== NETWORK ===================== -->
-<main class="nova-screen view" id="view-network">
-  <nova-appbar title="Wi-Fi" subtitle="Connections"></nova-appbar>
+
+<!-- ===================== 6. BATTERY DETAIL VIEW ===================== -->
+<main class="nova-screen view" id="view-battery">
+  <nova-appbar title="Battery" subtitle="Power & Health">
+    <nova-icon-button icon="arrow-left" label="Back" class="back-btn"></nova-icon-button>
+  </nova-appbar>
 
   <nova-card pad>
-    <nova-switch label="Wi-Fi" id="wifi-toggle" checked></nova-switch>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-size:13px; font-weight:700; color:var(--nova-muted)">CURRENT LEVEL</div>
+        <div style="font-size:36px; font-weight:800; letter-spacing:-1px; margin-top:2px;">88%</div>
+      </div>
+      <nova-badge value="Normal Health" tone="pos" icon="check"></nova-badge>
+    </div>
+    <div style="height:16px"></div>
+    <nova-switch label="Low Power Mode" sublabel="Reduces background activity to save power" id="low-power-toggle"></nova-switch>
+    <div style="height:10px"></div>
+    <nova-switch label="Battery Percentage" sublabel="Show percentage in status bar" checked></nova-switch>
   </nova-card>
 
-  <nova-section title="My Networks" style="margin-top:22px" id="wifi-list">
-    <nova-list>
-      <nova-row icon="wifi" color="#2b7fff" title="Nova Home 5G" subtitle="Connected, secured" chevron id="demo-net-1"></nova-row>
-      <nova-row icon="lock" title="Office Corporate" chevron></nova-row>
-      <nova-row icon="unlock" title="Starbucks Public" chevron></nova-row>
-    </nova-list>
-  </nova-section>
-</main>
-
-<!-- ===================== ABOUT ===================== -->
-<main class="nova-screen view" id="view-about">
-  <nova-appbar title="About" subtitle="Device Information"></nova-appbar>
-
-  <nova-section title="Device Details">
-    <nova-list>
-      <nova-row title="Name" value="Naomi's NovaPhone" chevron></nova-row>
-      <nova-row title="Software Version" value="NovaOS 2.1" chevron id="update-row"></nova-row>
-      <nova-row title="Model Name" value="NovaPhone 14 Pro" chevron></nova-row>
-      <nova-row title="Serial Number" value="NV-983142-X" chevron></nova-row>
-    </nova-list>
+  <nova-section title="Battery Usage (Last 24 Hours)" style="margin-top:22px">
+    <nova-sparkbars id="battery-chart" title="Hourly consumption" data="12,18,8,24,40,32,15,6" labels="12am,3am,6am,9am,12pm,3pm,6pm,9pm"></nova-sparkbars>
   </nova-section>
 
-  <nova-section title="Capacity" style="margin-top:22px">
+  <nova-section title="Battery Health" style="margin-top:22px">
     <nova-card pad>
-      <nova-progress value="68" label="Storage used" hint="174 GB / 256 GB"></nova-progress>
-      <div style="height:18px"></div>
-      <nova-progress value="15" label="System Data" hint="38 GB"></nova-progress>
-    </nova-card>
-  </nova-section>
-
-  <nova-section title="Hardware Health" style="margin-top:22px">
-    <nova-card pad>
-      <nova-gauge value="98" label="Battery health" sublabel="Maximum capacity"></nova-gauge>
+      <nova-gauge value="98" label="Maximum Capacity" sublabel="Peak performance capability"></nova-gauge>
     </nova-card>
   </nova-section>
 </main>
 
-<!-- ===================== DOCK ===================== -->
-<div class="nova-dock">
-  <nova-navbar id="nav"
-    items="General:gear,Appearance:palette,Network:wifi,About:circle-info"
-    actions="Search:magnifying-glass,Lock:lock,Restart:power-off"></nova-navbar>
-</div>
 
+<!-- ===================== 7. GENERAL & STORAGE VIEW ===================== -->
+<main class="nova-screen view" id="view-general">
+  <nova-appbar title="General & Storage" subtitle="Device Management">
+    <nova-icon-button icon="arrow-left" label="Back" class="back-btn"></nova-icon-button>
+  </nova-appbar>
+
+  <nova-section title="About Device">
+    <nova-list>
+      <nova-row title="Device Name" value="Naomi's NovaPhone" chevron id="row-devname"></nova-row>
+      <nova-row title="Model Name" value="NovaPhone 14 Pro Max" chevron></nova-row>
+      <nova-row title="Software Version" value="NovaOS 2.1 ( Build 20F83 )" chevron></nova-row>
+      <nova-row title="Serial Number" value="NV-884920-X9" chevron></nova-row>
+    </nova-list>
+  </nova-section>
+
+  <nova-section title="Storage Allocation" style="margin-top:22px">
+    <nova-card pad>
+      <nova-progress value="65" label="Internal Storage" hint="166.4 GB / 256 GB"></nova-progress>
+      <div style="height:16px"></div>
+      <nova-progress value="28" label="System Data & OS" hint="32.8 GB"></nova-progress>
+      <div style="height:16px"></div>
+      <nova-progress value="18" label="Media & Photos" hint="24.1 GB"></nova-progress>
+    </nova-card>
+  </nova-section>
+
+  <nova-section title="Device Control" style="margin-top:22px">
+    <nova-list>
+      <nova-row color="#ff4d4d" icon="power-off" title="Shut Down Device" chevron id="btn-shutdown"></nova-row>
+      <nova-row color="#ffc93c" icon="rotate-left" title="Transfer or Reset NovaPhone" chevron id="btn-reset"></nova-row>
+    </nova-list>
+  </nova-section>
+</main>
+
+
+<!-- ===================== 8. SOFTWARE UPDATE VIEW ===================== -->
+<main class="nova-screen view" id="view-update">
+  <nova-appbar title="Software Update" subtitle="NovaOS Updates">
+    <nova-icon-button icon="arrow-left" label="Back" class="back-btn"></nova-icon-button>
+  </nova-appbar>
+
+  <nova-card pad>
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:20px; font-weight:800; letter-spacing:-.5px">NovaOS 2.2</div>
+        <div style="font-size:12px; font-weight:700; color:var(--nova-muted); margin-top:2px">Release Build • 412 MB</div>
+      </div>
+      <nova-badge value="Ready" tone="pos" icon="circle-check"></nova-badge>
+    </div>
+
+    <div style="height:16px"></div>
+    <p style="font-size:13px; line-height:1.6; color:var(--nova-muted); margin:0;">
+      This update brings support for custom widget scaling, dynamic audio haptics, improved battery optimization, and essential security updates.
+    </p>
+
+    <div style="height:20px"></div>
+    <nova-button variant="primary" block icon="arrow-down-to-line" id="btn-install-update">Download & Install Now</nova-button>
+  </nova-card>
+
+  <nova-section title="Automatic Updates" style="margin-top:22px">
+    <nova-list>
+      <nova-switch label="Download NovaOS Updates" sublabel="Over Wi-Fi automatically" checked></nova-switch>
+      <nova-switch label="Install System Responses" sublabel="Apply security patches without restart" checked></nova-switch>
+    </nova-list>
+  </nova-section>
+</main>
+
+
+<!-- Load Component Scripts -->
 <script src="nova-ui.js"></script><!--NOVA_JS-->
 <script src="nova-components.js"></script><!--NOVA_COMPONENTS-->
 
 <script id="app-js">
 /* =========================================================
-   APP — NovaOS Settings Logic
+   SETTINGS APPLICATION LOGIC
    ========================================================= */
 
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const on = (sel, evt, fn) => { const el = $(sel); el && el.addEventListener(evt, fn); };
 
-/* ---------- navigation ---------- */
-const VIEWS = { 
-    General: 'view-general', 
-    Appearance: 'view-appearance', 
-    Network: 'view-network', 
-    About: 'view-about' 
-};
-
-// Handle Bottom Tab Navigation
-$('#nav').addEventListener('nova-navigate', e => {
-  const id = VIEWS[e.detail.label];
-  if (!id) return;
-  document.querySelectorAll('.view').forEach(v => v.classList.toggle('is-active', v.id === id));
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-// Handle Quick Actions from Navbar
-$('#nav').addEventListener('nova-action', async e => {
-  const a = e.detail.action;
-  if (a === 'Search') {
-      document.querySelectorAll('.view').forEach(v => v.classList.toggle('is-active', v.id === 'view-general'));
-      $('#main-search').focus();
-      return;
+// Navigation Helper function (push / back view switching)
+function goToView(targetId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
+  const target = document.getElementById(targetId);
+  if (target) {
+    target.classList.add('is-active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  if (a === 'Restart') {
-      const ok = await NovaUI.dialog({
-        title: 'Restart device?',
-        body: 'Are you sure you want to restart your NovaPhone? Unsaved data may be lost.',
-        icon: 'power-off', confirm: 'Restart', cancel: 'Cancel', tone: 'danger'
-      });
-      if (ok) {
-          NovaUI.loading('Restarting...');
-          setTimeout(() => NovaUI.loading(false), 2000);
-      }
-      return;
-  }
-  NovaUI.toast(a + ' tapped');
+}
+
+/* ---------- 1. BACK BUTTON HANDLERS ---------- */
+document.querySelectorAll('.back-btn').forEach(btn => {
+  btn.addEventListener('nova-tap', () => goToView('view-main'));
+  btn.addEventListener('click', () => goToView('view-main'));
 });
 
-/* ---------- general ---------- */
-on('#profile-avatar', 'nova-tap', () => {
-    NovaUI.sheet({
-        title: 'NovaID Account', subtitle: 'Naomi Rahman',
-        html: `
-          <nova-list>
-            <nova-row icon="cloud" color="#2b7fff" title="NovaCloud" subtitle="50 GB available" chevron></nova-row>
-            <nova-row icon="credit-card" color="#6b3df5" title="Payment & Delivery" chevron></nova-row>
-            <nova-row icon="shield-halved" color="#1db954" title="Password & Security" chevron></nova-row>
-          </nova-list>
-          <div style="height:18px"></div>
-          <nova-button variant="danger" block data-close>Sign Out</nova-button>
-        `
-    });
+/* ---------- 2. MAIN MENU ROUTING ---------- */
+on('#profile-row', 'click', () => {
+  NovaUI.sheet({
+    title: 'NovaID Account', subtitle: 'Naomi Rahman (naomi@novaos.io)',
+    html: `
+      <nova-list>
+        <nova-row icon="cloud" color="#2b7fff" title="NovaCloud Storage" subtitle="182 GB of 200 GB Used" chevron></nova-row>
+        <nova-row icon="credit-card" color="#6b3df5" title="Payment & Subscriptions" subtitle="2 Active Plans" chevron></nova-row>
+        <nova-row icon="shield-halved" color="#1db954" title="Password & Security" chevron></nova-row>
+      </nova-list>
+      <div style="height:18px"></div>
+      <nova-button variant="danger" block data-close>Sign Out of NovaID</nova-button>`
+  });
 });
 
-on('#nav-wifi', 'nova-tap', () => {
-    // Programmatically trigger dock to switch to Network
-    $('#nav').setAttribute('active', 'Network');
-    $('#nav').dispatchEvent(new CustomEvent('nova-navigate', { detail: { label: 'Network' } }));
+on('#row-wifi', 'nova-tap', () => goToView('view-wifi'));
+on('#row-bt', 'nova-tap', () => goToView('view-bluetooth'));
+on('#row-sounds', 'nova-tap', () => goToView('view-sounds'));
+on('#row-appearance', 'nova-tap', () => goToView('view-appearance'));
+on('#row-battery', 'nova-tap', () => goToView('view-battery'));
+on('#row-general', 'nova-tap', () => goToView('view-general'));
+on('#row-update', 'nova-tap', () => goToView('view-update'));
+
+// Quick Action Sheets for items without dedicated view pages
+on('#row-cellular', 'nova-tap', () => {
+  NovaUI.sheet({
+    title: 'Mobile Data Settings', subtitle: 'Primary SIM (eSIM)',
+    html: `
+      <nova-list>
+        <nova-switch label="Mobile Data" checked></nova-switch>
+        <nova-switch label="Data Roaming"></nova-switch>
+        <nova-row title="Voice & Data" value="5G Auto" chevron></nova-row>
+      </nova-list>
+      <div style="height:16px"></div>
+      <nova-button variant="primary" block data-close>Done</nova-button>`
+  });
 });
 
-on('#nav-appearance', 'nova-tap', () => {
-    $('#nav').setAttribute('active', 'Appearance');
-    $('#nav').dispatchEvent(new CustomEvent('nova-navigate', { detail: { label: 'Appearance' } }));
+on('#row-hotspot', 'nova-tap', () => {
+  NovaUI.sheet({
+    title: 'Personal Hotspot', subtitle: 'Share Wi-Fi internet connection',
+    html: `
+      <nova-list>
+        <nova-switch label="Allow Others to Join"></nova-switch>
+        <nova-row title="Wi-Fi Password" value="••••••••" chevron></nova-row>
+      </nova-list>
+      <div style="height:16px"></div>
+      <nova-button variant="primary" block data-close>Done</nova-button>`
+  });
 });
 
-on('#main-search', 'nova-search', e => { 
-    if (e.detail.query.length > 0) NovaUI.toast('Searching for "' + e.detail.query + '"'); 
+on('#row-vpn', 'nova-tap', () => {
+  NovaUI.toast('No active VPN configurations installed', { tone: 'info' });
 });
 
-/* ---------- appearance ---------- */
+on('#row-focus', 'nova-tap', () => {
+  NovaUI.sheet({
+    title: 'Focus Modes', subtitle: 'Silence notifications and calls',
+    html: `
+      <nova-list>
+        <nova-switch label="Do Not Disturb" icon="moon" checked></nova-switch>
+        <nova-switch label="Work Focus" icon="briefcase"></nova-switch>
+        <nova-switch label="Sleep Focus" icon="bed"></nova-switch>
+      </nova-list>
+      <div style="height:16px"></div>
+      <nova-button variant="primary" block data-close>Done</nova-button>`
+  });
+});
+
+on('#row-faceid', 'nova-tap', async () => {
+  const ok = await NovaUI.dialog({
+    title: 'Enter Passcode',
+    body: 'Passcode verification is required to access Face ID & Security parameters.',
+    icon: 'lock', confirm: 'Authenticate', cancel: 'Cancel'
+  });
+  if (ok) NovaUI.toast('Authentication successful', { tone: 'success' });
+});
+
+on('#update-banner', 'nova-action', () => goToView('view-update'));
+
+/* ---------- 3. SUB-VIEW INTERACTIONS ---------- */
+// Wi-Fi Toggle
+on('#wifi-main-toggle', 'nova-change', e => {
+  const isOn = e.detail.checked;
+  $('#wifi-content').style.display = isOn ? 'block' : 'none';
+  NovaUI.toast('Wi-Fi ' + (isOn ? 'enabled' : 'disabled'));
+});
+
+on('#wifi-connected-item', 'nova-tap', () => {
+  NovaUI.sheet({
+    title: 'Nova Home 5G', subtitle: 'Connected • 192.168.1.104',
+    html: `
+      <nova-list>
+        <nova-switch label="Auto-Join Network" checked></nova-switch>
+        <nova-switch label="Low Data Mode"></nova-switch>
+        <nova-switch label="Limit IP Address Tracking" checked></nova-switch>
+      </nova-list>
+      <div style="height:18px"></div>
+      <nova-button variant="danger" block data-close icon="link-slash">Forget This Network</nova-button>`
+  });
+});
+
+// Bluetooth Toggle
+on('#bt-main-toggle', 'nova-change', e => {
+  const isOn = e.detail.checked;
+  $('#bt-content').style.display = isOn ? 'block' : 'none';
+  NovaUI.toast('Bluetooth ' + (isOn ? 'turned on' : 'turned off'));
+});
+
+// Theme Selector
 on('#theme-seg', 'nova-change', e => {
   const mode = e.detail.value.toLowerCase();
-  // Call NovaUI theme SDK
   const resolved = NovaUI.theme.set(mode);
-  
-  // Update meta tag for status bar blending
   document.querySelector('meta[name="theme-color"]')
     .setAttribute('content', resolved === 'light' ? '#eef0f4' : '#0a0a0f');
-    
-  NovaUI.toast('System theme updated to ' + e.detail.value, {tone: 'success'});
+  NovaUI.toast('Theme set to ' + e.detail.value, { tone: 'success' });
 });
 
-/* ---------- network ---------- */
-on('#wifi-toggle', 'nova-change', e => {
-    const isOn = e.detail.checked;
-    $('#wifi-list').style.opacity = isOn ? '1' : '0.4';
-    $('#wifi-list').style.pointerEvents = isOn ? 'auto' : 'none';
-    NovaUI.toast('Wi-Fi turned ' + (isOn ? 'on' : 'off'));
+// Low Power Mode Toggle
+on('#low-power-toggle', 'nova-change', e => {
+  const active = e.detail.checked;
+  NovaUI.toast(active ? 'Low Power Mode Activated' : 'Low Power Mode Deactivated', {
+    tone: active ? 'warn' : 'info'
+  });
 });
 
-on('#demo-net-1', 'nova-tap', () => {
-    NovaUI.sheet({
-        title: 'Nova Home 5G', subtitle: 'Connected',
-        html: `
-          <nova-list>
-            <nova-switch label="Auto-Join" checked></nova-switch>
-            <nova-switch label="Low Data Mode"></nova-switch>
-          </nova-list>
-          <div style="height:16px"></div>
-          <nova-row compact title="IP Address" value="192.168.1.14"></nova-row>
-          <nova-row compact title="Router" value="192.168.1.1"></nova-row>
-          <div style="height:18px"></div>
-          <nova-button variant="soft" block icon="link-slash" data-close>Forget This Network</nova-button>
-        `
-    });
+// Software Update Action
+on('#btn-install-update', 'nova-tap', () => {
+  NovaUI.loading('Downloading NovaOS 2.2...');
+  setTimeout(() => {
+    NovaUI.loading(false);
+    NovaUI.toast('Download complete. Installation will begin shortly.', { tone: 'success' });
+  }, 2200);
 });
 
-/* ---------- about ---------- */
-on('#update-row', 'nova-tap', async () => {
-    NovaUI.loading('Checking for updates...');
-    setTimeout(async () => {
-        NovaUI.loading(false);
-        const ok = await NovaUI.dialog({
-            title: 'NovaOS 2.2 Available',
-            body: 'A new software update is available. This update includes bug fixes and security improvements. Size: 412 MB.',
-            icon: 'arrow-down', confirm: 'Download & Install', cancel: 'Later'
-        });
-        if(ok) {
-            NovaUI.toast('Downloading update...', {icon: 'cloud-arrow-down'});
-        }
-    }, 1200);
+// Device Reset Dialog
+on('#btn-reset', 'nova-tap', async () => {
+  const ok = await NovaUI.dialog({
+    title: 'Erase All Content and Settings?',
+    body: 'This will factory reset your NovaPhone. All data, photos, accounts, and media will be permanently deleted.',
+    icon: 'trash', confirm: 'Erase Phone', cancel: 'Cancel', tone: 'danger'
+  });
+  if (ok) NovaUI.toast('Reset process initiated...', { tone: 'warn' });
 });
 
+// Shut down dialog
+on('#btn-shutdown', 'nova-tap', async () => {
+  const ok = await NovaUI.dialog({
+    title: 'Power Off Device?',
+    body: 'Slide to power off your NovaPhone.',
+    icon: 'power-off', confirm: 'Power Off', cancel: 'Cancel', tone: 'danger'
+  });
+  if (ok) NovaUI.loading('Shutting down...');
+});
+
+// Search input toast
+on('#main-search', 'nova-search', e => {
+  if (e.detail.query.length > 0) NovaUI.toast('Searching settings for "' + e.detail.query + '"');
+});
 </script>
 </body>
 </html>

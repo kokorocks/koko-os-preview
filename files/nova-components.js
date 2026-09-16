@@ -1592,7 +1592,7 @@ define('nova-navbar', {
       const n = arcBtns.length;
       arcBtns.forEach((b, i) => {
         if (!open) {
-          b.style.transform = 'translate(0,0) scale(.4)';
+          b.style.transform = 'translate(0,0) scale(.4)'; 
           b.style.transitionDelay = `${(n - 1 - i) * 35}ms`;
           return;
         }
