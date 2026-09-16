@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en" data-nova-theme="dark" data-nova-mode="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<title>NovaOS Wallet</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<link rel="stylesheet" href="nova-ui.css"><!--NOVA_CSS-->
+
+<style id="app-css">
+  .view{ display:none; }
+  .view.is-active{ display:block; animation:view-in .4s var(--nova-ease) both; }
+  @keyframes view-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+  .hero-balance{ margin:4px 2px 18px; }
+  .hero-balance .k{ font-size:12.5px; font-weight:650; color:var(--nova-muted); }
+  .hero-balance .v{ font-size:38px; font-weight:800; letter-spacing:-1.6px; margin-top:4px;
+                    font-variant-numeric:tabular-nums; }
+  .hero-balance .d{ font-size:12.5px; font-weight:750; color:var(--nova-pos); margin-top:5px;
+                    display:flex; align-items:center; gap:6px; }
+
+  .panel-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .panel-head h3{ margin:0; font-size:16px; font-weight:800; letter-spacing:-.4px; color:var(--nova-panel-ink); }
+  .panel-head button{ all:unset; cursor:pointer; font:700 12.5px var(--nova-font); color:#7a7a92; }
+
+  /* rows inside the white panel need panel ink, not shell ink */
+  .nova-panel nova-row{ --nova-muted:#7a7a92; --nova-surface-2:#f0f0f5; }
+  .nova-panel nova-list{ --nova-surface:#fff; --nova-line:rgba(15,15,25,.08); }
+  .nova-panel nova-divider{ --nova-line:rgba(15,15,25,.09); --nova-muted:#8b8b9e; }
+
+  .gallery-note{ font-size:12.5px; line-height:1.6; color:var(--nova-muted); margin:0 2px 14px; }
+  .swatch{ display:flex; gap:8px; flex-wrap:wrap; }
+  code.tag{ font:700 11.5px ui-monospace,monospace; color:var(--nova-accent);
+            background:var(--nova-surface); border:1px solid var(--nova-line);
+            padding:3px 7px; border-radius:7px; }
+</style>
+</head>
+
+<body>
+
+<!-- ===================== WALLET ===================== -->
+<main class="nova-screen view is-active" id="view-wallet">
+
+  <nova-appbar title="My Wallet" subtitle="Tuesday, 15 September">
+    <nova-icon-button icon="bell" label="Notifications" badge="3" id="bell"></nova-icon-button>
+    <nova-avatar name="Naomi Rahman" size="44" status="online" id="me"></nova-avatar>
+  </nova-appbar>
+
+  <div class="hero-balance">
+    <div class="k">Total balance</div>
+    <div class="v" id="balance">$2,481.20</div>
+    <div class="d"><i class="fa-solid fa-arrow-trend-up"></i> Up $240.80 this month</div>
+  </div>
+
+  <nova-card-stack id="stack" cards='[
+    {"brand":"HSBC Bank","type":"VISA","number":"4821","holder":"N. Rahman","expiry":"09/29","theme":"violet","icon":"building-columns"},
+    {"brand":"Member Ship Card","type":"GOLD","number":"7730","holder":"N. Rahman","expiry":"04/28","theme":"blue","icon":"star"},
+    {"brand":"Digital Assets","type":"CRYPTO","number":"1194","holder":"N. Rahman","expiry":"12/30","theme":"ink","icon":"bitcoin-sign"}
+  ]'></nova-card-stack>
+
+  <div style="height:34px"></div>
+
+  <nova-action-grid id="quick"
+    items="Send:paper-plane,Request:hand-holding-dollar,Top up:plus,Split:user-group"></nova-action-grid>
+
+  <nova-section title="Passes" action="See all" style="margin-top:22px">
+    <div class="nova-cols" style="--cols:2;--gap:11px">
+      <nova-ticket compact from="ICN" to="DHK" from-city="Seoul" to-city="Dhaka"
+                   airline="Qatar Airways" depart="08:15" theme="green"></nova-ticket>
+      <nova-card pad tone="plain" radius="20px"
+                 style="background:linear-gradient(135deg,#ffd451,#f0a91d);color:#3a2a00;
+                        display:flex;flex-direction:column">
+        <div style="font-size:11.5px;font-weight:750;opacity:.72">Loyalty</div>
+        <div style="font-size:20px;font-weight:850;letter-spacing:-.6px;margin-top:6px">2,480 pts</div>
+        <div style="margin-top:auto;padding-top:20px;font-size:11px;opacity:.72">Gold tier, expires December</div>
+      </nova-card>
+    </div>
+  </nova-section>
+
+  <nova-section title="Car key" style="margin-top:22px">
+    <nova-device-card id="car" name="BMW iX" label="Connected device" status="Unlocked"
+      icon="car-side" theme="blue"
+      actions="Lock:lock,Unlock:lock-open,Engine:power-off,Parking:square-parking"></nova-device-card>
+  </nova-section>
+
+  <!-- the white sheet that rides over the dark shell -->
+  <section class="nova-panel">
+    <div class="panel-head">
+      <h3>Last transaction</h3>
+      <button id="filter-btn"><i class="fa-solid fa-sliders"></i> Filter</button>
+    </div>
+
+    <nova-list tone="bare" id="tx-list">
+      <nova-row color="#e50914" icon="brands:youtube" title="Netflix"
+                subtitle="14 April 2019" tag="Entertainment" value="$45k.00" chevron></nova-row>
+      <nova-row color="#1db954" icon="brands:spotify" title="Spotify"
+                subtitle="14 April 2019" tag="Subscription" value="-$700.65" chevron></nova-row>
+      <nova-row color="#2b7fff" icon="brands:apple" title="Apple Store"
+                subtitle="12 April 2019" tag="Shopping" value="-$249.00" chevron></nova-row>
+      <nova-row color="#6b3df5" icon="arrow-down" title="Transfer from Ravi"
+                subtitle="11 April 2019" tag="Received" value="+$120.00" chevron></nova-row>
+    </nova-list>
+  </section>
+</main>
+
+<!-- ===================== INSIGHTS ===================== -->
+<main class="nova-screen view" id="view-insights">
+  <nova-appbar title="Insights" subtitle="September">
+    <nova-icon-button icon="calendar" label="Change period" id="period"></nova-icon-button>
+  </nova-appbar>
+
+  <nova-segmented id="range" items="Week,Month,Year" value="Month"></nova-segmented>
+  <div style="height:16px"></div>
+
+  <nova-sparkline title="Balance trend" value="$2,481.20" delta="+9.4%"
+                  data="4,8,6,12,9,15,13,18,16,22,20,26"></nova-sparkline>
+
+  <div style="height:12px"></div>
+  <div class="nova-cols" style="--cols:2">
+    <nova-stat label="Income" value="$4,280" delta="+12%" icon="arrow-down-to-line"></nova-stat>
+    <nova-stat label="Spending" value="$1,798" delta="-4%" icon="arrow-up-from-bracket"></nova-stat>
+  </div>
+
+  <div style="height:12px"></div>
+  <nova-donut center="$1,798" caption="spent"
+    segments="Food:42:#6b3df5,Travel:28:#2fdd7f,Bills:18:#ffc93c,Other:12:#2b7fff"></nova-donut>
+
+  <div style="height:12px"></div>
+  <nova-sparkbars id="week" title="Spending, last 7 days" data="18,26,14,32,22,40,28" labels="M,T,W,T,F,S,S"></nova-sparkbars>
+
+  <div style="height:12px"></div>
+  <nova-gauge value="62" label="Budget used" sublabel="$1,240 of $2,000"></nova-gauge>
+  <div style="height:12px"></div>
+  <nova-card pad>
+    <nova-progress value="74" label="Savings goal" hint="$3,700 / $5,000"></nova-progress>
+    <div style="height:18px"></div>
+    <nova-progress value="31" label="Travel fund" hint="$620 / $2,000"></nova-progress>
+  </nova-card>
+
+  <nova-section title="Boarding pass" style="margin-top:22px">
+    <nova-ticket from="ICN" to="DHK" from-city="Seoul" to-city="Dhaka" airline="Qatar Airways"
+                 depart="08:15" gate="K35" seat="E,F,G,H" cabin="Economy"
+                 theme="green" code="9 780201 379624"></nova-ticket>
+  </nova-section>
+
+  <nova-section title="Trip timeline" style="margin-top:22px">
+    <nova-card pad>
+      <nova-timeline items="06:40|Check-in closes|Counter D, terminal 3|done;07:35|Boarding|Gate K35|done;08:15|Departure|On time;13:05|Arrival|Dhaka, terminal 2"></nova-timeline>
+    </nova-card>
+  </nova-section>
+</main>
+
+<!-- ===================== COMPONENT GALLERY ===================== -->
+<main class="nova-screen nova-screen--wide view" id="view-kit">
+  <nova-appbar title="Component kit" subtitle="NovaUI v2.0"></nova-appbar>
+
+  <p class="gallery-note">
+    Every element below is a custom element, so the markup is the API. Add your own with
+    <code class="tag">NovaUI.define()</code> and it behaves exactly like these.
+  </p>
+
+  <nova-banner tone="warn" icon="triangle-exclamation" title="Card expires in 21 days"
+    body="Order a replacement now so you keep tap-to-pay working." action="Order replacement"
+    dismissible id="banner"></nova-banner>
+
+  <nova-section title="Buttons" style="margin-top:22px">
+    <div class="swatch">
+      <nova-button variant="primary" icon="paper-plane">Send money</nova-button>
+      <nova-button variant="soft" icon="clock-rotate-left">History</nova-button>
+      <nova-button variant="outline" icon-end="arrow-right">Details</nova-button>
+      <nova-button variant="danger" icon="ban">Freeze card</nova-button>
+      <nova-button variant="ghost" size="sm">Skip</nova-button>
+      <nova-button variant="primary" size="sm" loading>Sending</nova-button>
+    </div>
+    <div style="height:12px"></div>
+    <div class="swatch">
+      <nova-icon-button icon="bell" badge="9"></nova-icon-button>
+      <nova-icon-button icon="qrcode" tone="accent"></nova-icon-button>
+      <nova-icon-button icon="gear" tone="plain"></nova-icon-button>
+      <nova-fab icon="plus" id="demo-fab"></nova-fab>
+    </div>
+  </nova-section>
+
+  <nova-section title="Chips and badges" style="margin-top:22px">
+    <div class="swatch">
+      <nova-chip label="All" icon="layer-group" active></nova-chip>
+      <nova-chip label="Food" icon="utensils"></nova-chip>
+      <nova-chip label="Travel" icon="plane"></nova-chip>
+      <nova-chip label="Bills" icon="file-invoice"></nova-chip>
+    </div>
+    <div style="height:12px"></div>
+    <div class="swatch">
+      <nova-badge value="Settled" tone="pos" icon="check"></nova-badge>
+      <nova-badge value="Pending" tone="warn" icon="clock"></nova-badge>
+      <nova-badge value="Declined" tone="neg" icon="xmark"></nova-badge>
+      <nova-badge value="Scheduled" tone="info" icon="calendar"></nova-badge>
+      <nova-badge value="Draft"></nova-badge>
+    </div>
+  </nova-section>
+
+  <nova-section title="Inputs" style="margin-top:22px">
+    <nova-search placeholder="Search transactions" id="search"></nova-search>
+    <div style="height:14px"></div>
+    <nova-input label="Recipient" placeholder="Name or @tag" icon="user"
+                action="address-book" hint="Searches your contacts"></nova-input>
+    <div style="height:14px"></div>
+    <nova-input label="Amount" placeholder="0.00" icon="dollar-sign" type="number"
+                error="Enter at least $1.00"></nova-input>
+    <div style="height:18px"></div>
+    <nova-card pad>
+      <nova-slider min="0" max="2000" step="50" value="750" label="Daily limit" prefix="$"></nova-slider>
+      <div style="height:20px"></div>
+      <nova-stepper label="Tickets" value="2" min="1" max="8"></nova-stepper>
+      <div style="height:6px"></div>
+      <nova-checkbox label="Save this card for next time" checked></nova-checkbox>
+    </nova-card>
+    <div style="height:18px"></div>
+    <nova-card pad>
+      <nova-pin length="6" mask label="Enter your 6-digit PIN" id="pin"></nova-pin>
+    </nova-card>
+  </nova-section>
+
+  <nova-section title="Toggles and tabs" style="margin-top:22px">
+    <nova-tabs items="Overview,Cards,Activity,Limits" value="Overview" id="tabs"></nova-tabs>
+    <div style="height:16px"></div>
+    <nova-segmented items="Light,Auto,Dark" value="Dark" id="theme-seg"></nova-segmented>
+    <div style="height:16px"></div>
+    <nova-list>
+      <nova-switch label="Face ID" sublabel="Confirm payments with your face" icon="face-smile" checked></nova-switch>
+      <nova-switch label="Spending alerts" sublabel="Notify me over $100" icon="bell" checked></nova-switch>
+      <nova-switch label="Round-up savings" sublabel="Round purchases to the nearest dollar" icon="piggy-bank"></nova-switch>
+    </nova-list>
+  </nova-section>
+
+  <nova-section title="People" style="margin-top:22px">
+    <div class="nova-scroller">
+      <nova-avatar name="Tom Holland" size="54" label status="online"></nova-avatar>
+      <nova-avatar name="Ravi Menon" size="54" label status="away"></nova-avatar>
+      <nova-avatar name="Sana Iqbal" size="54" label status="online"></nova-avatar>
+      <nova-avatar name="Jules Park" size="54" label></nova-avatar>
+      <nova-avatar name="Mo Diallo" size="54" label status="offline"></nova-avatar>
+    </div>
+    <div style="height:8px"></div>
+    <nova-card pad>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:13.5px;font-weight:750">Shared with</div>
+          <div style="font-size:11.5px;color:var(--nova-muted);margin-top:3px">5 people have full control</div>
+        </div>
+        <nova-avatar-group names="Tom,Ravi,Sana,Jules,Mo" max="4"></nova-avatar-group>
+      </div>
+    </nova-card>
+  </nova-section>
+
+  <nova-section title="Overlays" style="margin-top:22px">
+    <div class="swatch">
+      <nova-button variant="soft" icon="comment" id="demo-toast">Toast</nova-button>
+      <nova-button variant="soft" icon="circle-check" id="demo-toast-ok">Success toast</nova-button>
+      <nova-button variant="soft" icon="window-maximize" id="demo-sheet">Sheet</nova-button>
+      <nova-button variant="soft" icon="circle-question" id="demo-dialog">Confirm</nova-button>
+      <nova-button variant="soft" icon="spinner" id="demo-loading">Loading</nova-button>
+    </div>
+  </nova-section>
+
+  <nova-section title="States" style="margin-top:22px">
+    <nova-card pad>
+      <nova-skeleton lines="3" h="14"></nova-skeleton>
+    </nova-card>
+    <div style="height:12px"></div>
+    <nova-card>
+      <nova-empty icon="inbox" title="No transactions yet"
+        body="When money moves in or out of this account, it will show up here."
+        action="Add money" id="empty"></nova-empty>
+    </nova-card>
+    <div style="height:12px"></div>
+    <nova-accordion title="How are fees calculated?" icon="receipt">
+      Transfers between Nova accounts are free. Card payments in another currency use the
+      mid-market rate plus 0.4%, shown before you confirm.
+    </nova-accordion>
+  </nova-section>
+
+  <nova-section title="Cards" style="margin-top:22px">
+    <div class="nova-scroller">
+      <nova-payment-card style="width:280px" brand="HSBC Bank" type="VISA" number="4821"
+        holder="N. Rahman" expiry="09/29" balance="$2,481.20" theme="violet" icon="building-columns"></nova-payment-card>
+      <nova-payment-card style="width:280px" brand="Nova Savings" type="MASTERCARD" number="7730"
+        holder="N. Rahman" expiry="04/28" balance="$8,140.00" theme="green" icon="piggy-bank"></nova-payment-card>
+      <nova-payment-card style="width:280px" brand="Digital Assets" type="CRYPTO" number="1194"
+        holder="N. Rahman" expiry="12/30" balance="0.42 BTC" theme="ink" icon="bitcoin-sign"></nova-payment-card>
+    </div>
+  </nova-section>
+</main>
+
+<!-- ===================== DOCK ===================== -->
+<div class="nova-dock">
+  <nova-navbar id="nav"
+    items="Wallet:wallet,Insights:chart-simple,Kit:shapes,Profile:user:2"
+    fab="plus"
+    actions="Send:paper-plane,Scan:qrcode,Top up:plus,Split:user-group"></nova-navbar>
+</div>
+
+<script src="nova-ui.js"></script><!--NOVA_JS-->
+<script src="nova-components.js"></script><!--NOVA_COMPONENTS-->
+
+<script id="app-js">
+/* =========================================================
+   APP — everything below is ordinary app code using the SDK
+   ========================================================= */
+
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const on = (sel, evt, fn) => { const el = $(sel); el && el.addEventListener(evt, fn); };
+
+/* ---------- navigation ---------- */
+const VIEWS = { Wallet: 'view-wallet', Insights: 'view-insights', Kit: 'view-kit', Profile: 'view-wallet' };
+
+$('#nav').addEventListener('nova-navigate', e => {
+  const id = VIEWS[e.detail.label];
+  if (!id) return;
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('is-active', v.id === id));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (e.detail.label === 'Profile') NovaUI.toast('Profile is not built yet', { tone: 'info' });
+});
+
+$('#nav').addEventListener('nova-action', e => {
+  const a = e.detail.action;
+  if (a === 'Scan') return openScanner();
+  if (a === 'Send') return openSend();
+  NovaUI.toast(a + ' tapped');
+});
+
+/* ---------- wallet ---------- */
+$('#stack').addEventListener('nova-select', e => {
+  NovaUI.toast(e.detail.card.brand + ' is now your default card', { tone: 'success' });
+});
+
+$('#quick').addEventListener('nova-action', e => {
+  if (e.detail.action === 'Send') return openSend();
+  NovaUI.toast(e.detail.action + ' tapped');
+});
+
+$('#car').addEventListener('nova-action', async e => {
+  const a = e.detail.action;
+  if (a === 'Engine') {
+    const ok = await NovaUI.dialog({
+      title: 'Start the engine?',
+      body: 'The car will run for 10 minutes and then shut off on its own.',
+      icon: 'power-off', confirm: 'Start engine', cancel: 'Not now'
+    });
+    if (!ok) return NovaUI.toast('Engine left off');
+    NovaUI.loading('Starting engine');
+    setTimeout(() => { NovaUI.loading(false); NovaUI.toast('Engine running', { tone: 'success' }); }, 1400);
+    return;
+  }
+  NovaUI.toast('BMW iX ' + a.toLowerCase() + 'ed', { tone: 'success' });
+});
+
+$('#bell').addEventListener('nova-tap', () => {
+  const s = NovaUI.sheet({
+    title: 'Notifications', subtitle: '3 unread',
+    html: `
+      <nova-row icon="credit-card" color="#6b3df5" title="Card payment"
+        subtitle="Apple Store" value="-$249.00" chevron></nova-row>
+      <nova-row icon="arrow-down" color="#2fdd7f" title="Money received"
+        subtitle="From Ravi Menon" value="+$120.00" chevron></nova-row>
+      <nova-row icon="shield-halved" color="#ffc93c" title="New sign-in"
+        subtitle="Chrome on macOS" chevron></nova-row>
+      <div style="height:16px"></div>
+      <nova-button variant="primary" block data-close>Mark all as read</nova-button>`
+  });
+});
+
+$('#me').addEventListener('nova-tap', () => NovaUI.toast('Signed in as Naomi'));
+
+$('#filter-btn').addEventListener('click', () => {
+  const s = NovaUI.sheet({
+    title: 'Filter transactions',
+    html: `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+        <nova-chip label="All" icon="layer-group" active></nova-chip>
+        <nova-chip label="Income" icon="arrow-down"></nova-chip>
+        <nova-chip label="Spending" icon="arrow-up"></nova-chip>
+        <nova-chip label="Subscriptions" icon="repeat"></nova-chip>
+      </div>
+      <nova-slider min="0" max="1000" step="25" value="500" label="Maximum amount" prefix="$"></nova-slider>
+      <div style="height:22px"></div>
+      <nova-button variant="primary" block data-close>Show results</nova-button>`
+  });
+});
+
+document.querySelectorAll('#tx-list nova-row').forEach(row => {
+  row.addEventListener('nova-tap', e => {
+    NovaUI.sheet({
+      title: e.detail.title, subtitle: row.getAttribute('subtitle'),
+      html: `
+        <div style="text-align:center;padding:10px 0 22px">
+          <div style="font-size:34px;font-weight:800;letter-spacing:-1.2px">${row.getAttribute('value')}</div>
+          <div style="margin-top:10px"><nova-badge value="Settled" tone="pos" icon="check"></nova-badge></div>
+        </div>
+        <nova-list>
+          <nova-row compact icon="credit-card" title="Paid with" subtitle="HSBC Bank •••• 4821"></nova-row>
+          <nova-row compact icon="tag" title="Category" subtitle="${row.getAttribute('tag') || 'Uncategorised'}"></nova-row>
+          <nova-row compact icon="location-dot" title="Where" subtitle="Online"></nova-row>
+        </nova-list>
+        <div style="height:18px"></div>
+        <div style="display:flex;gap:10px">
+          <nova-button variant="soft" block icon="flag">Dispute</nova-button>
+          <nova-button variant="primary" block icon="repeat" data-close>Repeat</nova-button>
+        </div>`
+    });
+  });
+});
+
+/* ---------- flows ---------- */
+function openSend() {
+  const s = NovaUI.sheet({
+    title: 'Send money', subtitle: 'From HSBC Bank •••• 4821',
+    html: `
+      <div class="nova-scroller" style="margin:0;padding:2px 0 14px">
+        <nova-avatar name="Tom Holland" size="52" label></nova-avatar>
+        <nova-avatar name="Ravi Menon" size="52" label></nova-avatar>
+        <nova-avatar name="Sana Iqbal" size="52" label></nova-avatar>
+        <nova-avatar name="Jules Park" size="52" label></nova-avatar>
+      </div>
+      <nova-input label="Amount" placeholder="0.00" icon="dollar-sign" type="number" id="send-amt"></nova-input>
+      <div style="height:16px"></div>
+      <nova-input label="Note" placeholder="What's it for?" icon="pen"></nova-input>
+      <div style="height:22px"></div>
+      <nova-button variant="primary" block icon="paper-plane" id="send-go">Send payment</nova-button>`
+  });
+  $('#send-go', s.el).addEventListener('nova-tap', () => {
+    const amt = $('#send-amt', s.el).value;
+    if (!amt || +amt <= 0) return NovaUI.toast('Enter an amount first', { tone: 'error' });
+    s.close();
+    NovaUI.loading('Sending payment');
+    setTimeout(() => {
+      NovaUI.loading(false);
+      NovaUI.toast('Sent $' + Number(amt).toFixed(2), { tone: 'success', action: 'Undo', onAction: () => NovaUI.toast('Payment cancelled') });
+    }, 1300);
+  });
+}
+
+function openScanner() {
+  NovaUI.sheet({
+    title: 'Scan to pay', subtitle: 'Point your camera at a Nova QR code',
+    html: `
+      <div style="display:grid;place-items:center;height:200px;border-radius:20px;
+                  background:var(--nova-surface-2);border:1.5px dashed var(--nova-line-strong);
+                  font-size:44px;color:var(--nova-muted)">
+        <i class="fa-solid fa-qrcode"></i>
+      </div>
+      <div style="height:18px"></div>
+      <nova-button variant="soft" block icon="image" data-close>Choose from photos</nova-button>`
+  });
+}
+
+/* ---------- insights ---------- */
+on('#range', 'nova-change', e => NovaUI.toast('Showing ' + e.detail.value.toLowerCase()));
+on('#week', 'nova-select', e => NovaUI.toast('Day ' + (e.detail.index + 1) + ': $' + e.detail.value));
+document.querySelectorAll('nova-stat').forEach(s =>
+  s.addEventListener('nova-tap', () => NovaUI.toast(s.getAttribute('label') + ': ' + s.getAttribute('value'))));
+
+/* ---------- kit demos ---------- */
+on('#theme-seg', 'nova-change', e => {
+  const mode = e.detail.value.toLowerCase();
+  const resolved = NovaUI.theme.set(mode);
+  document.querySelector('meta[name="theme-color"]')
+    .setAttribute('content', resolved === 'light' ? '#eef0f4' : '#0a0a0f');
+  NovaUI.toast('Theme set to ' + e.detail.value);
+});
+
+on('#tabs', 'nova-change', e => NovaUI.toast(e.detail.value));
+on('#search', 'nova-search', e => { if (e.detail.query.length > 2) NovaUI.toast('Searching "' + e.detail.query + '"'); });
+on('#pin', 'nova-complete', () => NovaUI.toast('PIN accepted', { tone: 'success' }));
+on('#demo-fab', 'nova-tap', () => NovaUI.toast('Floating action tapped'));
+on('#banner', 'nova-action', () => NovaUI.toast('Replacement card ordered', { tone: 'success' }));
+on('#empty', 'nova-action', () => NovaUI.toast('Add money'));
+
+on('#demo-toast', 'nova-tap', () => NovaUI.toast('Heads up: your statement is ready'));
+on('#demo-toast-ok', 'nova-tap', () =>
+  NovaUI.toast('Payment sent', { tone: 'success', action: 'Undo', onAction: () => NovaUI.toast('Payment cancelled') }));
+on('#demo-sheet', 'nova-tap', () => NovaUI.sheet({
+  title: 'Control centre', subtitle: 'Nearby devices and connections',
+  html: `
+    <nova-list>
+      <nova-switch label="Wi-Fi" sublabel="Nova Home" icon="wifi" checked></nova-switch>
+      <nova-switch label="Bluetooth" sublabel="2 devices connected" icon="bluetooth-b" checked></nova-switch>
+      <nova-switch label="Focus" sublabel="Off" icon="moon"></nova-switch>
+    </nova-list>
+    <div style="height:18px"></div>
+    <nova-button variant="primary" block data-close>Done</nova-button>`
+}));
+on('#demo-dialog', 'nova-tap', async () => {
+  const ok = await NovaUI.dialog({
+    title: 'Freeze this card?', body: 'Payments will be declined until you unfreeze it. Direct debits keep working.',
+    icon: 'snowflake', confirm: 'Freeze card', cancel: 'Keep active', tone: 'danger'
+  });
+  NovaUI.toast(ok ? 'Card frozen' : 'Card left active', { tone: ok ? 'success' : 'info' });
+});
+on('#demo-loading', 'nova-tap', () => {
+  NovaUI.loading('Syncing accounts');
+  setTimeout(() => { NovaUI.loading(false); NovaUI.toast('All accounts up to date', { tone: 'success' }); }, 1600);
+});
+</script>
+</body>
+</html>
