@@ -193,6 +193,15 @@ if (batteryLevel < 20) {
         tile.onmouseleave = () => {
             mouseoverlock = false;
         }
+
+        tile.onpointerover = () => {
+            if (mouseoverlock) return;
+            mouseoverlock = true;
+        }
+
+        tile.onpointerleave = () => {
+            mouseoverlock = false;
+        }
         if (state.edit) {
             const removeButton = document.createElement('button');
             removeButton.type = 'button';
