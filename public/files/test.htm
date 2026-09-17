@@ -11,6 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
+<link rel="stylesheet" href="nova-ui.css"><!--NOVA_CSS-->
+
 <style id="app-css">
   body {
     padding-bottom: 30px;
@@ -360,10 +362,11 @@
 </main>
 
 
-<!-- Load Aurora modules -->
-<script src="aurora.js"></script>
-<script>
-aurora.import(aurora.novaUI).then(() => {
+<!-- Load Component Scripts -->
+<script src="nova-ui.js"></script><!--NOVA_JS-->
+<script src="nova-components.js"></script><!--NOVA_COMPONENTS-->
+
+<script id="app-js">
 /* =========================================================
    SETTINGS APPLICATION LOGIC
    ========================================================= */
@@ -545,7 +548,6 @@ on('#btn-shutdown', 'nova-tap', async () => {
 // Search input toast
 on('#main-search', 'nova-search', e => {
   if (e.detail.query.length > 0) NovaUI.toast('Searching settings for "' + e.detail.query + '"');
-});
 });
 </script>
 </body>
